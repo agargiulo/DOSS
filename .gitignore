@@ -1,0 +1,9 @@
+*.b
+*.image
+*.lst
+*.o
+*.vim
+.*.swp
+BuildImage
+Makefile.bak
+prog.nl
