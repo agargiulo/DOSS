@@ -17,7 +17,7 @@
 ** This code is intended to be assembled with as, not as86.
 */
 
-#include "bootstrap.h"
+#include <bootstrap.h>
 
 /*
 ** Configuration options - define in Makefile

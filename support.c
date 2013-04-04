@@ -12,11 +12,11 @@
 **
 */
 
-#include "startup.h"
-#include "support.h"
-#include "c_io.h"
-#include "x86arch.h"
-#include "bootstrap.h"
+#include <startup.h>
+#include <support.h>
+#include <c_io.h>
+#include <x86arch.h>
+#include <bootstrap.h>
 
 /*
 ** Global variables and local data types.

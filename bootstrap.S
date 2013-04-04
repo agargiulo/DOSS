@@ -28,7 +28,7 @@
 */
 	.code16
 
-#include "bootstrap.h"
+#include <bootstrap.h>
 
 BOOT_SEGMENT	= 0x07C0	/* default BIOS addr to load boot sector */
 BOOT_ADDRESS 	= 0x00007C00

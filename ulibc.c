@@ -10,7 +10,7 @@
 ** Description:	C implementations of user-level library functions
 */
 
-#include "common.h"
+#include <common.h>
 
 /*
 ** PRIVATE DEFINITIONS

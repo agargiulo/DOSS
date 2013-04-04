@@ -17,7 +17,7 @@
 **	interrupted occurred.
 */
 
-#include "bootstrap.h"
+#include <bootstrap.h>
 
 /*
 ** Configuration options - define in Makefile

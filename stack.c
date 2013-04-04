@@ -12,10 +12,10 @@
 
 #define	__SP2_KERNEL__
 
-#include "common.h"
+#include <common.h>
 
-#include "stack.h"
-#include "queue.h"
+#include <stack.h>
+#include <queue.h>
 
 /*
 ** PRIVATE DEFINITIONS

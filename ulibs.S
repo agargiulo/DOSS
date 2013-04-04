@@ -12,7 +12,7 @@
 
 #define	__SP2_ASM__
 
-#include "syscall.h"
+#include <syscall.h>
 
 /*
 ** System call stubs

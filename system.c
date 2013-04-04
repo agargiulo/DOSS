@@ -12,24 +12,24 @@
 
 #define	__SP2_KERNEL__
 
-#include "common.h"
+#include <common.h>
 
-#include "system.h"
-#include "clock.h"
-#include "process.h"
-#include "bootstrap.h"
-#include "syscall.h"
-#include "sio.h"
-#include "scheduler.h"
+#include <system.h>
+#include <clock.h>
+#include <process.h>
+#include <bootstrap.h>
+#include <syscall.h>
+#include <sio.h>
+#include <scheduler.h>
 
-#include "startup.h"
+#include <startup.h>
 #include <x86arch.h>
 
 // need init() address
-#include "user.h"
+#include <user.h>
 
 // need the exit() prototype
-#include "ulib.h"
+#include <ulib.h>
 
 /*
 ** PRIVATE DEFINITIONS

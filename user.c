@@ -10,11 +10,11 @@
 ** Description:	User routines.
 */
 
-#include "common.h"
+#include <common.h>
 
-#include "user.h"
+#include <user.h>
 
-#include "c_io.h"
+#include <c_io.h>
 
 /*
 ** USER PROCESSES
