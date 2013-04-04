@@ -25,7 +25,7 @@
 
 #ifndef __SP2_ASM__
 
-#include "queue.h"
+#include <queue.h>
 
 /*
 ** Start of C-only definitions

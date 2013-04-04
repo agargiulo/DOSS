@@ -15,10 +15,10 @@
 **
 */
 
-#include "c_io.h"
-#include "startup.h"
-#include "support.h"
-#include "x86arch.h"
+#include <c_io.h>
+#include <startup.h>
+#include <support.h>
+#include <x86arch.h>
 
 /*
 ** Video parameters, and state variables

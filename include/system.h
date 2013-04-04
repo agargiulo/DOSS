@@ -13,10 +13,10 @@
 #ifndef _SYSTEM_H_
 #define _SYSTEM_H_
 
-#include "common.h"
+#include <common.h>
 
-#include "process.h"
-#include "stack.h"
+#include <process.h>
+#include <stack.h>
 
 /*
 ** General (C and/or assembly) definitions

@@ -53,16 +53,16 @@
 
 #define	__SP2_KERNEL__
 
-#include "common.h"
+#include <common.h>
 
-#include "sio.h"
+#include <sio.h>
 
-#include "queue.h"
-#include "process.h"
-#include "scheduler.h"
-#include "system.h"
+#include <queue.h>
+#include <process.h>
+#include <scheduler.h>
+#include <system.h>
 
-#include "startup.h"
+#include <startup.h>
 #include <uart.h>
 #include <x86arch.h>
 

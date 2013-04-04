@@ -17,24 +17,24 @@
 
 // only pull these in if we're not in assembly language
 
-#include "defs.h"
-#include "types.h"
+#include <defs.h>
+#include <types.h>
 
-#include "c_io.h"
-#include "support.h"
+#include <c_io.h>
+#include <support.h>
 
 #ifdef __SP2_KERNEL__
 
 // OS needs the kernel library headers and the system headers
 
-#include "system.h"
-#include "klib.h"
+#include <system.h>
+#include <klib.h>
 
 #else
 
 // User code nees onlyl the user library headers
 
-#include "ulib.h"
+#include <ulib.h>
 
 #endif
 

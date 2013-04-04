@@ -13,7 +13,7 @@
 #ifndef _DEFS_H_
 #define _DEFS_H_
 
-#include "common.h"
+#include <common.h>
 
 /*
 ** General (C and/or assembly) definitions
@@ -65,7 +65,7 @@
 ** Start of C-only definitions
 */
 
-#include "types.h"
+#include <types.h>
 
 /*
 ** Types

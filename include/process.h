@@ -13,7 +13,7 @@
 #ifndef _PROCESS_H_
 #define _PROCESS_H_
 
-#include "common.h"
+#include <common.h>
 
 /*
 ** General (C and/or assembly) definitions
@@ -64,8 +64,8 @@
 ** Start of C-only definitions
 */
 
-#include "clock.h"
-#include "stack.h"
+#include <clock.h>
+#include <stack.h>
 
 // ARG(p) - access argument from user stack of process
 //

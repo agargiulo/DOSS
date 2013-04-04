@@ -13,7 +13,7 @@
 #ifndef _CLOCK_H_
 #define _CLOCK_H_
 
-#include "common.h"
+#include <common.h>
 
 /*
 ** General (C and/or assembly) definitions
@@ -21,7 +21,7 @@
 
 // clock interrupts per second
 
-#define	CLOCK_FREQUENCY		1000
+#define	CLOCK_FREQUENCY		100
 
 // standard process quantum (in ticks)
 

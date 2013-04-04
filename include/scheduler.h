@@ -13,7 +13,7 @@
 #ifndef _SCHEDULER_H_
 #define _SCHEDULER_H_
 
-#include "common.h"
+#include <common.h>
 
 /*
 ** General (C and/or assembly) definitions
@@ -25,8 +25,8 @@
 ** Start of C-only definitions
 */
 
-#include "process.h"
-#include "queue.h"
+#include <process.h>
+#include <queue.h>
 
 // number of ready queues - one per priority level
 

@@ -15,8 +15,8 @@ U_C_OBJ = clock.o klibc.o process.o queue.o scheduler.o sio.o \
 	stack.o syscall.o system.o ulibc.o user.o
 U_S_SRC = klibs.S ulibs.S
 U_S_OBJ = klibs.o ulibs.o
-U_H_SRC = clock.h common.h defs.h klib.h process.h queue.h \
-	scheduler.h sio.h stack.h syscall.h system.h types.h ulib.h user.h
+U_H_SRC = include/clock.h include/common.h include/defs.h include/klib.h include/process.h include/queue.h \
+	include/scheduler.h include/sio.h include/stack.h include/syscall.h include/system.h include/types.h include/ulib.h include/user.h
 
 U_LIBS	=
 
@@ -106,7 +106,7 @@ C_SRC =	c_io.c support.c $(U_C_SRC)
 
 # Header files
 
-H_SRC = bootstrap.h c_io.h startup.h support.h $(U_H_SRC)
+H_SRC = include/bootstrap.h include/c_io.h include/startup.h include/support.h $(U_H_SRC)
 
 # Collections of files
 
@@ -155,7 +155,7 @@ usb:	usb.image
 BuildImage:	BuildImage.c
 	$(CC) -o BuildImage BuildImage.c
 
-Offsets:	Offsets.c common.h queue.h process.h
+Offsets:	Offsets.c include/common.h include/queue.h include/process.h
 	$(CC) $(INCLUDES) -o Offsets Offsets.c
 
 #
@@ -183,7 +183,7 @@ prog.dis: prog.o
 #	need this because we aren't giving header files to makedepend
 #
 
-common.h:	defs.h types.h c_io.h support.h system.h klib.h ulib.h
+common.h:	include/defs.h include/types.h include/c_io.h include/support.h include/system.h include/klib.h include/ulib.h
 
 #
 #       makedepend is a program which creates dependency lists by
@@ -195,3 +195,39 @@ depend:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
+bootstrap.o: ./include/bootstrap.h
+startup.o: ./include/bootstrap.h
+isr_stubs.o: ./include/bootstrap.h
+ulibs.o: ./include/syscall.h ./include/common.h
+c_io.o: ./include/c_io.h ./include/startup.h ./include/support.h
+c_io.o: /home/fac/wrc/include/x86arch.h
+support.o: ./include/startup.h ./include/support.h ./include/c_io.h
+support.o: /home/fac/wrc/include/x86arch.h ./include/bootstrap.h
+clock.o: ./include/common.h /home/fac/wrc/include/x86arch.h
+clock.o: ./include/startup.h ./include/clock.h ./include/process.h
+clock.o: ./include/stack.h ./include/queue.h ./include/scheduler.h
+clock.o: ./include/sio.h ./include/syscall.h
+klibc.o: ./include/common.h ./include/queue.h ./include/stack.h
+process.o: ./include/common.h ./include/process.h ./include/clock.h
+process.o: ./include/stack.h ./include/queue.h
+queue.o: ./include/common.h ./include/queue.h ./include/process.h
+queue.o: ./include/clock.h ./include/stack.h ./include/syscall.h
+queue.o: ./include/sio.h ./include/scheduler.h
+scheduler.o: ./include/common.h ./include/scheduler.h ./include/process.h
+scheduler.o: ./include/clock.h ./include/stack.h ./include/queue.h
+sio.o: ./include/common.h ./include/sio.h ./include/queue.h
+sio.o: ./include/process.h ./include/clock.h ./include/stack.h
+sio.o: ./include/scheduler.h ./include/system.h ./include/startup.h
+sio.o: /home/fac/wrc/include/uart.h /home/fac/wrc/include/x86arch.h
+stack.o: ./include/common.h ./include/stack.h ./include/queue.h
+syscall.o: ./include/common.h ./include/syscall.h ./include/process.h
+syscall.o: ./include/clock.h ./include/stack.h ./include/queue.h
+syscall.o: ./include/scheduler.h ./include/sio.h ./include/support.h
+syscall.o: ./include/startup.h /home/fac/wrc/include/x86arch.h
+system.o: ./include/common.h ./include/system.h ./include/process.h
+system.o: ./include/clock.h ./include/stack.h ./include/bootstrap.h
+system.o: ./include/syscall.h ./include/sio.h ./include/queue.h
+system.o: ./include/scheduler.h ./include/startup.h
+system.o: /home/fac/wrc/include/x86arch.h ./include/user.h ./include/ulib.h
+ulibc.o: ./include/common.h
+user.o: ./include/common.h ./include/user.h ./include/c_io.h

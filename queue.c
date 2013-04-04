@@ -12,16 +12,16 @@
 
 #define	__SP2_KERNEL__
 
-#include "common.h"
+#include <common.h>
 
-#include "queue.h"
+#include <queue.h>
 
-#include "process.h"
-#include "stack.h"
+#include <process.h>
+#include <stack.h>
 
-#include "syscall.h"
-#include "sio.h"
-#include "scheduler.h"
+#include <syscall.h>
+#include <sio.h>
+#include <scheduler.h>
 
 /*
 ** PRIVATE DEFINITIONS

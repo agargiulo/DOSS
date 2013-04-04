@@ -13,7 +13,7 @@
 #ifndef _SYSCALL_H_
 #define _SYSCALL_H_
 
-#include "common.h"
+#include <common.h>
 
 /*
 ** General (C and/or assembly) definitions
@@ -63,7 +63,7 @@
 
 #ifdef __SP2_KERNEL__
 
-#include "queue.h"
+#include <queue.h>
 
 #include <x86arch.h>
 

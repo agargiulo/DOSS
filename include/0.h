@@ -13,7 +13,7 @@
 #ifndef _?_H_
 #define _?_H_
 
-#include "common.h"
+#include <common.h>
 
 /*
 ** General (C and/or assembly) definitions

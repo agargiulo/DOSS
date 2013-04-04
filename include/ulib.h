@@ -17,7 +17,7 @@
 #ifndef _ULIB_H_
 #define _ULIB_H_
 
-#include "common.h"
+#include <common.h>
 
 /*
 ** General (C and/or assembly) definitions
@@ -25,7 +25,7 @@
 
 #ifndef __SP2_ASM__
 
-#include "process.h"
+#include <process.h>
 
 /*
 ** Start of C-only definitions

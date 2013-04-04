@@ -13,7 +13,7 @@
 #ifndef _STACK_H_
 #define _STACK_H_
 
-#include "common.h"
+#include <common.h>
 
 /*
 ** General (C and/or assembly) definitions

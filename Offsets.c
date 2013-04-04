@@ -15,13 +15,13 @@
 
 #define	__SP2_KERNEL__
 
-#include "common.h"
+#include <common.h>
 
 // avoid complaints about stdio.h
 #undef NULL
 
-#include "queue.h"
-#include "process.h"
+#include <queue.h>
+#include <process.h>
 
 #include <stdio.h>
 

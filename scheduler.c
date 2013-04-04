@@ -12,9 +12,9 @@
 
 #define	__SP2_KERNEL__
 
-#include "common.h"
+#include <common.h>
 
-#include "scheduler.h"
+#include <scheduler.h>
 
 /*
 ** PRIVATE DEFINITIONS

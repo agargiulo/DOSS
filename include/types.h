@@ -13,7 +13,7 @@
 #ifndef _TYPES_H_
 #define _TYPES_H_
 
-#include "common.h"
+#include <common.h>
 
 /*
 ** General (C and/or assembly) definitions
