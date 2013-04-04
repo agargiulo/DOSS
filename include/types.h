@@ -48,6 +48,8 @@ typedef uint16_t	ushort_t;
 typedef long		int32_t;
 typedef unsigned long	uint32_t;
 
+typedef uint16_t	size_t;
+
 // system call status return
 
 typedef uint8_t		ustatus_t;

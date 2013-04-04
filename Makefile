@@ -10,14 +10,14 @@
 # User supplied files
 #
 U_C_SRC = clock.c klibc.c process.c queue.c scheduler.c sio.c \
-	stack.c syscall.c system.c ulibc.c user.c shell.c
+	stack.c syscall.c system.c ulibc.c user.c shell.c string.c
 U_C_OBJ = clock.o klibc.o process.o queue.o scheduler.o sio.o \
-	stack.o syscall.o system.o ulibc.o user.o shell.o
+	stack.o syscall.o system.o ulibc.o user.o shell.o string.o
 U_S_SRC = klibs.S ulibs.S
 U_S_OBJ = klibs.o ulibs.o
 U_H_SRC = include/clock.h include/common.h include/defs.h include/klib.h include/process.h include/queue.h \
 	include/scheduler.h include/sio.h include/stack.h include/syscall.h include/system.h include/types.h \
-	include/ulib.h include/user.h include/shell.h
+	include/ulib.h include/user.h include/shell.h include/string.h
 
 U_LIBS	=
 
