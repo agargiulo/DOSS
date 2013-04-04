@@ -860,6 +860,8 @@ void init( void ) {
 
 	c_puts( "Init started\n" );
 
+	// Clear the screen
+	write( '' );
 	write( '$' );
 
 	// always start the idle process first
