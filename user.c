@@ -16,6 +16,8 @@
 
 #include <c_io.h>
 
+#include <shell.h>
+
 /*
 ** USER PROCESSES
 **
@@ -1091,6 +1093,15 @@ void init( void ) {
 	** for our children (direct, or inherited) to exit.
 	*/
 
+	pid = fork( PRIO_STD );
+	if ( pid < 0 ) {
+		// perror
+	} else if ( pid == 0 ) {
+		status = exec( run_shell );
+		// should not return;
+		exit( EXIT_FAILURE );
+	}
+	
 	for(;;) {
 		status = wait( &upid, &estat );
 		if( status != U_SUCCESS ) {
