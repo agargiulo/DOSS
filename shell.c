@@ -12,23 +12,33 @@
 
 #define	__SP2_KERNEL__
 
-#include <common.h>
 #include <shell.h>
-#include <c_io.h>
 
-#define INPUT_SIZE 64
+#include <string.h>
+
 
 /*
 ** PRIVATE DEFINITIONS
 */
 
+#define INPUT_SIZE 64
+
 /*
 ** PRIVATE DATA TYPES
 */
 
+typedef struct shell_cmd {
+	char *name,
+	void *func
+};
+
 /*
 ** PRIVATE GLOBAL VARIABLES
 */
+
+struct shell_cmd command_tab[] {
+	
+};
 
 /*
 ** PUBLIC GLOBAL VARIABLES
@@ -37,6 +47,22 @@
 /*
 ** PRIVATE FUNCTIONS
 */
+
+void interpret_input( char *input, int inputsize ) {
+	
+	if ( strcmp( input, "clear" ) == 0 ) {
+		c_setscroll( 0, 7, 99, 99 );
+		c_puts_at( 0, 6, "================================================================================" );
+	}
+	else if ( strcmp( input, "help" ) == 0 ) {
+		
+	}
+	else { // Unrecognized command
+		c_printf("'%s' is not recognized as an internal or external command,\n", input);
+		c_printf("operable program or batch file.\n\n");
+	}
+	
+}
 
 /*
 ** PUBLIC FUNCTIONS
@@ -51,8 +77,7 @@ void run_shell( void ) {
 		c_printf("C:\\Users\\team1>");
 		read = c_gets( buffer, INPUT_SIZE );
 		buffer[read-1] = 0;
-		c_printf("'%s' is not recognized as an internal or external command,\n", buffer);
-		c_printf("operable program or batch file.\n\n");
+		interpret_input( buffer, read );
 	}
 }
 
