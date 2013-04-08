@@ -15,6 +15,10 @@
 
 #define	__SP2_KERNEL__
 
+// Mixing our includes and system includes only happens in this file
+// Fixing that with this #define
+#define MIXED_INCLUDES
+
 #include <common.h>
 
 // avoid complaints about stdio.h
