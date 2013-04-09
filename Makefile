@@ -21,6 +21,8 @@ U_H_SRC = include/clock.h include/common.h include/defs.h include/klib.h include
 
 U_LIBS	=
 
+VPATH = . shell
+
 #
 # User compilation/assembly definable options
 #
