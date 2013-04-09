@@ -19,7 +19,8 @@
 ** PRIVATE DEFINITIONS
 */
 
-#define INPUT_SIZE 64
+#define INPUT_LEN 64
+#define MAX_ARGC 10
 
 /*
 ** PRIVATE DATA TYPES
@@ -33,6 +34,9 @@ typedef struct shell_cmd {
 /*
 ** PRIVATE GLOBAL VARIABLES
 */
+
+char *ps1 = "C:\\Users\\team1>";
+
 int command_count = 4;
 shell_cmd command_tab[] = {
 	{"ps", run_ps},
@@ -41,6 +45,8 @@ shell_cmd command_tab[] = {
 	{"reboot", run_reboot}
 };
 
+char buffer[INPUT_LEN];
+char *argv[MAX_ARGC];
 /*
 ** PUBLIC GLOBAL VARIABLES
 */
@@ -49,29 +55,36 @@ shell_cmd command_tab[] = {
 ** PRIVATE FUNCTIONS
 */
 
-void interpret_input( char *input, int inputsize ) {
-	ustatus_t status;
+
+void interpret_input( int argc, char **argv ) {
+	
 	pid_t pid;
+	pid_t upid;
+	ustatus_t status;
+	estatus_t estat;
 	
 	int i;
 	for ( i = 0; i != command_count; ++i ) {
-		if ( strcmp( command_tab[i].name, input ) == 0 ) {
+		if ( strcmp( command_tab[i].name, argv[0] ) == 0 ) {
 			pid = fork( PRIO_STD );
 			
-			if ( pid == -1 ) {
-				// error
+			if ( pid == -1 ) { // Error
 				
-			} else if ( pid == 0 ) {
-				status = exec( command_tab[i].func );
+			} else if ( pid == 0 ) { // Child
+				status = execv( command_tab[i].func, argc, argv);
 				// Should not return
+				
+			} else { // Parent
+				status = wait( &upid, &estat );
+				c_printf("parent returning\n");
+				return;
 			}
-			// else parent, return
-			return;
+			
 		}
 	}
 	
 	// Unrecognized command
-	c_printf("'%s' is not recognized as an internal or external command,\n", input);
+	c_printf("'%s' is not recognized as an internal or external command,\n", argv[0]);
 	c_printf("operable program or batch file.\n\n");
 	
 }
@@ -82,14 +95,35 @@ void interpret_input( char *input, int inputsize ) {
 
 void run_shell( void ) {
 	int read;
-	char buffer[INPUT_SIZE];
 	
 	while ( 1 ) {
 		// wait on kb interrupt
-		c_printf("C:\\Users\\team1>");
-		read = c_gets( buffer, INPUT_SIZE );
+		c_printf(ps1);
+		read = c_gets( buffer, INPUT_LEN );
 		buffer[read-1] = 0;
-		interpret_input( buffer, read );
+		if ( read != 1 ) {
+			int i = 0;
+			int argc = 0;
+			
+			do {
+				argv[argc] = &buffer[i];
+				++argc;
+				
+				// Find the first space
+				for (;buffer[i] != ' ' && i < read; ++i);
+				
+				// Remove excess whitespace
+				for (;buffer[i] == ' '; ++i) {
+					buffer[i] = 0;
+				}
+				
+				
+			} while ( i != read );
+			
+			
+			
+			interpret_input( argc, argv );
+		}
 	}
 }
 
