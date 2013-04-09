@@ -667,6 +667,13 @@ int c_gets( char *buffer, unsigned int size ){
 		if( ch == EOT ){
 			break;
 		}
+		else if ( ch == '\b' )
+		{
+			*buffer--;
+			count -= 1;
+			size += 1;
+			continue;
+		}
 		*buffer++ = ch;
 		count += 1;
 		size -= 1;
