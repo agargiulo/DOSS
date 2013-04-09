@@ -48,7 +48,9 @@ typedef uint16_t	ushort_t;
 typedef long		int32_t;
 typedef unsigned long	uint32_t;
 
+#ifndef MIXED_INCLUDES
 typedef uint16_t	size_t;
+#endif
 
 // system call status return
 
