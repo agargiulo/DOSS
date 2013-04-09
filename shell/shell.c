@@ -35,11 +35,12 @@ typedef struct shell_cmd {
 /*
 ** PRIVATE GLOBAL VARIABLES
 */
-int command_count = 3;
+int command_count = 4;
 struct shell_cmd command_tab[] = {
 	{"ps", run_ps},
 	{"clear", run_clear},
-	{"help", run_help}
+	{"help", run_help},
+	{"reboot", run_reboot}
 };
 
 /*
