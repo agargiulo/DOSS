@@ -110,6 +110,18 @@ int fork( prio_t prio );
 ustatus_t exec( void (*entry)(void) );
 
 /*
+** execv - replace a process with a different program
+**
+** usage:	status = exec(entry, argcount, argvector);
+**
+** returns:
+**	does not return (if the attempt succeeds)
+**      failure status of the replacement attempt (if the attempt fails)
+*/
+
+ustatus_t execv( void (*entry)(void), int argc, char **argv );
+
+/*
 ** sleep - put the current process to sleep for some length of time
 **
 ** usage:	status = sleep(ms);

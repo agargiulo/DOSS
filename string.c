@@ -98,3 +98,13 @@ char * strcpy ( char * destination, const char * source ) {
 	
 	return destination;
 }
+
+char * strncpy ( char * destination, const char * source, size_t num ) {
+	int i;
+	
+	for ( i = 0; i != num; ++i ) {
+		destination[i] = source[i];
+	}
+	
+	return destination;
+}
