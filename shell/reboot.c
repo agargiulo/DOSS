@@ -8,9 +8,7 @@
 ** Contributor:
 **
 ** Description:	?
-*/
-
-#define	__SP2_KERNEL__
+*/ 
 
 #include <common.h>
 #include <string.h>

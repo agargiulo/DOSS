@@ -10,8 +10,6 @@
 ** Description:	Shell implementation for OS2
 */
 
-#define	__SP2_KERNEL__
-
 #include <shell.h>
 
 #include <string.h>
@@ -30,13 +28,13 @@
 typedef struct shell_cmd {
 	char *name;
 	void *func;
-};
+}shell_cmd;
 
 /*
 ** PRIVATE GLOBAL VARIABLES
 */
 int command_count = 4;
-struct shell_cmd command_tab[] = {
+shell_cmd command_tab[] = {
 	{"ps", run_ps},
 	{"clear", run_clear},
 	{"help", run_help},
@@ -52,7 +50,7 @@ struct shell_cmd command_tab[] = {
 */
 
 void interpret_input( char *input, int inputsize ) {
-	status_t status;
+	ustatus_t status;
 	pid_t pid;
 	
 	int i;
