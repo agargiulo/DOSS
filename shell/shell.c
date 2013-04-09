@@ -28,16 +28,18 @@
 */
 
 typedef struct shell_cmd {
-	char *name,
-	void *func
+	char *name;
+	void *func;
 };
 
 /*
 ** PRIVATE GLOBAL VARIABLES
 */
-
-struct shell_cmd command_tab[] {
-	
+int command_count = 3;
+struct shell_cmd command_tab[] = {
+	{"ps", run_ps},
+	{"clear", run_clear},
+	{"help", run_help}
 };
 
 /*
@@ -49,18 +51,29 @@ struct shell_cmd command_tab[] {
 */
 
 void interpret_input( char *input, int inputsize ) {
+	status_t status;
+	pid_t pid;
 	
-	if ( strcmp( input, "clear" ) == 0 ) {
-		c_setscroll( 0, 7, 99, 99 );
-		c_puts_at( 0, 6, "================================================================================" );
+	int i;
+	for ( i = 0; i != command_count; ++i ) {
+		if ( strcmp( command_tab[i].name, input ) == 0 ) {
+			pid = fork( PRIO_STD );
+			
+			if ( pid == -1 ) {
+				// error
+				
+			} else if ( pid == 0 ) {
+				status = exec( command_tab[i].func );
+				// Should not return
+			}
+			// else parent, return
+			return;
+		}
 	}
-	else if ( strcmp( input, "help" ) == 0 ) {
-		
-	}
-	else { // Unrecognized command
-		c_printf("'%s' is not recognized as an internal or external command,\n", input);
-		c_printf("operable program or batch file.\n\n");
-	}
+	
+	// Unrecognized command
+	c_printf("'%s' is not recognized as an internal or external command,\n", input);
+	c_printf("operable program or batch file.\n\n");
 	
 }
 

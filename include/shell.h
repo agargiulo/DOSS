@@ -32,7 +32,9 @@
 /*
 ** Globals
 */
-
+void run_clear(int argc, char **argv);
+void run_help(int argc, char **argv);
+void run_ps(int argc, char **argv);
 /*
 ** Prototypes
 */
