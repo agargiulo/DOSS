@@ -240,4 +240,4 @@ shell/shell.o: ./include/shell.h ./include/common.h ./include/string.h
 shell/ps.o: ./include/common.h
 shell/clear.o: ./include/common.h
 shell/help.o: ./include/common.h
-shell/reboot.o: ./include/common.h
+shell/reboot.o: ./include/common.h ./include/string.h

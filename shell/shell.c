@@ -93,3 +93,17 @@ void run_shell( void ) {
 	}
 }
 
+void wall_s (char *message)
+{
+	c_printf("%s", message);
+	for (int i = 0; i < strlen(message); ++i)
+	{
+		write(message[i]);
+	}
+}
+
+void wall_ch (char ch)
+{
+	c_putchar(ch);
+	write(ch);
+}

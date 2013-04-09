@@ -8,10 +8,10 @@
 ** Contributor:
 **
 ** Description:	?
-*/ 
-
+*/
 #include <common.h>
 #include <string.h>
+#include <shell.h>
 
 /*
 ** PRIVATE DEFINITIONS
@@ -39,30 +39,21 @@
 
 // WILL NOT RETURN
 void run_reboot(int argc, char **argv) {
-	//if (argc > 1
 	char *reboot_message = "System going down for reboot in ";
-	c_printf("%s", reboot_message);
-	for (int i = 0; i < strlen(reboot_message); i++)
-	{
-		write(reboot_message[i]);
-	}
+	wall_s(reboot_message);
 	
+	write('\a');
 	for (uint8_t countdown = 9; countdown > 0; --countdown)
 	{
-		c_printf("%d", countdown);
-		write(countdown + 48);
+		wall_ch( (char) countdown + 48);
 		sleep(ms_to_ticks(20));
-		c_printf(".");
-		write('.');
+		wall_ch('.');
 		sleep(ms_to_ticks(20));
-		c_printf(".");
-		write('.');
+		wall_ch('.');
 		sleep(ms_to_ticks(20));
 	}
-	c_printf("NOW");
-	write('N');
-	write('O');
-	write('W');
+	wall_s("NOW");
 	sleep(ms_to_ticks(20));
+	write('\a');
 	__asm__("lidt 0");
 }
