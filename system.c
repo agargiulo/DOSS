@@ -21,6 +21,7 @@
 #include <syscall.h>
 #include <sio.h>
 #include <scheduler.h>
+#include <pci.h>
 
 #include <startup.h>
 #include <x86arch.h>
@@ -467,6 +468,7 @@ void _init( void ) {
 	_sys_init();
 	_sched_init();
 	_clock_init();
+	_pci_init();
 
 	c_puts( "\n" );
 
