@@ -20,6 +20,8 @@ U_H_SRC = include/clock.h include/common.h include/defs.h include/klib.h include
 
 U_LIBS	=
 
+VPATH = . video pci
+
 #
 # User compilation/assembly definable options
 #
@@ -227,8 +229,8 @@ syscall.o: ./include/startup.h /home/fac/wrc/include/x86arch.h
 system.o: ./include/common.h ./include/system.h ./include/process.h
 system.o: ./include/clock.h ./include/stack.h ./include/bootstrap.h
 system.o: ./include/syscall.h ./include/sio.h ./include/queue.h
-system.o: ./include/scheduler.h ./include/startup.h
+system.o: ./include/scheduler.h ./include/pci.h ./include/startup.h
 system.o: /home/fac/wrc/include/x86arch.h ./include/user.h ./include/ulib.h
 ulibc.o: ./include/common.h
 user.o: ./include/common.h ./include/user.h ./include/c_io.h
-pci.o:	./include/common.h ./include/pci.h
+pci/pci.o: ./include/common.h ./include/pci.h ./include/startup.h
