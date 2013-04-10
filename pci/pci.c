@@ -7,12 +7,12 @@
 **
 */
 
-#include "pci.h"
+#include <common.h>
+#include <pci.h>
+#include <startup.h>
 
 void _pci_init( void )
 {
-	ulong_t address;
-
 	ushort_t bus;
 	ushort_t slot;
 	ushort_t func;
@@ -34,6 +34,7 @@ void _pci_init( void )
 				vendor = pci_read(bus, slot, func, REG_VENDOR);
 				if(vendor != INVALID)
 				{
+					device = pci_read(bus, slot, func, REG_DEVICE);
 					class = pci_readb(bus, slot, func, REG_CLASS);
 					subclass = pci_readb(bus, slot, func, REG_SUBCLASS);
 
@@ -113,9 +114,9 @@ ulong_t pci_getAddress(ushort_t bus, ushort_t slot, ushort_t func, ushort_t reg)
 {
 	ulong_t address;
 	ulong_t lbus = (ulong_t) bus;
-	ulong_t lslot = (ulong_t) lslot;
-	ulong_t lfunc = (ulong_t) function;
-	ushort_t reg_aligned = (regset & 0xFC); //Guarantees 4-aligned register
+	ulong_t lslot = (ulong_t) slot;
+	ulong_t lfunc = (ulong_t) func;
+	ushort_t reg_aligned = (reg & 0xFC); //Guarantees 4-aligned register
 	ulong_t enable = (uint32_t) 0x80000000; //Set Enable Bit
 	
 	address = (lbus << 16) | (lslot << 11) | (lfunc << 8) |

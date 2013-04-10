@@ -32,10 +32,10 @@ ubyte_t pci_readb(ushort_t bus, ushort_t slot, ushort_t func, ushort_t reg);
 // PCI Configuration Write Methods
 
 void pci_writel(ushort_t bus, ushort_t slot, ushort_t func, ushort_t reg, ulong_t data);
-void pci_write(ushort_t bus, ushort_t slot, ushort_t func, ushort_t reg, ulong_t data);
+void pci_write(ushort_t bus, ushort_t slot, ushort_t func, ushort_t reg, ushort_t data);
 
 // Helper Functions
 
-ulong_t pci_getAddress(ushort_t bus, ushort_t slot, ushort_t function, ushort_t reg);
+ulong_t pci_getAddress(ushort_t bus, ushort_t slot, ushort_t func, ushort_t reg);
 
 #endif
