@@ -15,25 +15,33 @@ void pci_init( void )
 
 ulong_t pci_readl(ushort_t bus, ushort_t slot, ushort_t func, ushort_t off)
 {
+	ulong_t address = pci_getAddress(bus, slot, func, off);
+
 	return 0xFFFF
 }
 
 ulong_t pci_read(ushort_t bus, ushort_t slot, ushort_t func, ushort_t off)
 {
+	ulong_t address = pci_getAddress(bus, slot, func, off);
+
 	return 0xFFFF
 }
 
 ulong_t pci_readb(ushort_t bus, ushort_t slot, ushort_t func, ushort_t off)
 {
+	ulong_t address = pci_getAddress(bus, slot, func, off);
+
 	return 0xFFFF;
 }
 
 void pci_writel(ushort_t bus, ushort_t slot, ushort_t func, ushort_t off, ulong_t dat)
 {
+	ulong_t address = pci_getAddress(bus, slot, func, off);
 }
 
 void pci_write(ushort_t bus, ushort_t slot, ushort_t func, ushort_t off, ushort_t dat)
 {
+	ulong_t address = pci_getAddress(bus, slot, func, off);
 }
 
 //Information from wiki.osdev.org/PCI

@@ -18,15 +18,15 @@ void pci_init( void );
 
 // PCI Configuration Read Methods
 
-uint32_t pci_readl(uint32_t addr);
-uint16_t pci_read(uint32_t addr);
-uint8_t pci_readb(uint32_t addr);
+ulong_t pci_readl(ushort_t bus, ushort_t slot, ushort_t func, ushort_t off);
+ushort_t pci_read(ushort_t bus, ushort_t slot, ushort_t func, ushort_t off);
+ubyte_t pci_readb(ushort_t bus, ushort_t slot, ushort_t func, ushort_t off);
 
 // PCI Configuration Write Methods
 
-void pci_writel(uint32_t addr, uint32_t data);
-void pci_write(uint32_t addr, uint16_t data);
+void pci_writel(ushort_t bus, ushort_t slot, ushort_t func, ushort_t off, ulong_t dat);
+void pci_write(ushort_t bus, ushort_t slot, ushort_t func, ushort_t off, ulong_t dat);
 
 // Helper Functions
 
-uint32_t pci_getAddress(uint16_t bus, uint16_t slot, uint16_t function, uint16_t offset);
+ulong_t pci_getAddress(ushort_t bus, ushort_t slot, ushort_t function, ushort_t offset);
