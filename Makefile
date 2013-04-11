@@ -10,13 +10,16 @@
 # User supplied files
 #
 U_C_SRC = clock.c klibc.c process.c queue.c scheduler.c sio.c \
-	stack.c syscall.c system.c ulibc.c user.c pci/pci.c
+	stack.c syscall.c system.c ulibc.c user.c pci/pci.c \
+	video/video.c
 U_C_OBJ = clock.o klibc.o process.o queue.o scheduler.o sio.o \
-	stack.o syscall.o system.o ulibc.o user.o pci.o
-U_S_SRC = klibs.S ulibs.S
-U_S_OBJ = klibs.o ulibs.o
-U_H_SRC = include/clock.h include/common.h include/defs.h include/klib.h include/process.h include/queue.h \
-	include/scheduler.h include/sio.h include/stack.h include/syscall.h include/system.h include/types.h include/ulib.h include/user.h include/pci.h
+	stack.o syscall.o system.o ulibc.o user.o pci.o video.o
+U_S_SRC = klibs.S ulibs.S video/video_s.s
+U_S_OBJ = klibs.o ulibs.o video_s.o
+U_H_SRC = include/clock.h include/common.h include/defs.h include/klib.h \
+	  include/process.h include/queue.h include/scheduler.h include/sio.h \
+	  include/stack.h include/syscall.h include/system.h include/types.h \
+	  include/ulib.h include/user.h include/pci.h video/video_s.h
 
 U_LIBS	=
 
@@ -234,3 +237,4 @@ system.o: /home/fac/wrc/include/x86arch.h ./include/user.h ./include/ulib.h
 ulibc.o: ./include/common.h
 user.o: ./include/common.h ./include/user.h ./include/c_io.h
 pci/pci.o: ./include/common.h ./include/pci.h ./include/startup.h
+video/video.o: ./include/common.h ./include/video_s.h
