@@ -79,7 +79,7 @@ void interpret_input( int argc, char **argv ) {
 				
 				// Should not return
 				c_printf("Warning: execv returned with status %d\n", status);
-				
+				exit( EXIT_FAILURE );
 			} else { // Parent
 
 				status = wait( &upid, &estat );
