@@ -9,3 +9,4 @@ and increment command_count to match the number of commands in command_tab.
 3. Implement <command>.c file in the shell/ directory, ensuring that your method's main matches
 the prototype you defined in shell.h
 
+And of course, add the new files to the Makefile as shell/command.c and command.o

@@ -37,11 +37,12 @@
 */
 
 void run_help( int argc, char **argv ) {
-	int i;
-	for ( i = 0; i != argc; ++i ) {
-		c_printf( "%s\n", argv[i] );
-	}
 	
-	c_printf( "help called\n" );
+	c_printf("Welcome to DOSS!\n");
+	c_printf("Currently, the following commands are supported:\n");
+	c_printf("	-help: Display this dialog\n");
+	c_printf("	-clear: Clear the screen\n");
+	c_printf("	-reboot: Reboot the computer\n");
+	c_printf("Much more soon to come!\n");
 	
 }
