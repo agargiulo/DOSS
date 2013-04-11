@@ -37,6 +37,10 @@
 */
 
 void run_help( int argc, char **argv ) {
+	int i;
+	for ( i = 0; i != argc; ++i ) {
+		c_printf( "%s\n", argv[i] );
+	}
 	
 	c_printf( "help called\n" );
 	

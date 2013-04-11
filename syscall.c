@@ -325,6 +325,10 @@ static void _sys_execv( pcb_t *pcb ) {
 	// assign the new entry point
 
 	pcb->context->eip = entry;
+	
+	ARG(pcb)[1] = argc;
+	ARG(pcb)[2] = argv;
+	
 }
 
 

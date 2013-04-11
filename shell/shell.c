@@ -47,6 +47,7 @@ shell_cmd command_tab[] = {
 
 char buffer[INPUT_LEN];
 char *argv[MAX_ARGC];
+
 /*
 ** PUBLIC GLOBAL VARIABLES
 */
@@ -69,17 +70,22 @@ void interpret_input( int argc, char **argv ) {
 			pid = fork( PRIO_STD );
 			
 			if ( pid == -1 ) { // Error
+
+				c_printf("Fork returned error, %s not completed.\n", argv[0]);
 				
 			} else if ( pid == 0 ) { // Child
+
 				status = execv( command_tab[i].func, argc, argv);
+				
 				// Should not return
+				c_printf("Warning: execv returned with status %d\n", status);
 				
 			} else { // Parent
+
 				status = wait( &upid, &estat );
-				c_printf("parent returning\n");
-				return;
+				
 			}
-			
+			return;
 		}
 	}
 	
@@ -101,6 +107,7 @@ void run_shell( void ) {
 		c_printf(ps1);
 		read = c_gets( buffer, INPUT_LEN );
 		buffer[read-1] = 0;
+		
 		if ( read != 1 ) {
 			int i = 0;
 			int argc = 0;
@@ -117,10 +124,7 @@ void run_shell( void ) {
 					buffer[i] = 0;
 				}
 				
-				
 			} while ( i != read );
-			
-			
 			
 			interpret_input( argc, argv );
 		}
