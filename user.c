@@ -16,6 +16,8 @@
 
 #include <c_io.h>
 
+#include <shell.h>
+
 /*
 ** USER PROCESSES
 **
@@ -831,18 +833,18 @@ void idle( void ) {
 	if( status != U_SUCCESS ) {
 		prt_ustat( "idle, getprio() status %s\n", status );
 	}
-	c_printf( "Idle (%d) started @ %u, prio %d\n", pid, time, prio );
+	//c_printf( "Idle (%d) started @ %u, prio %d\n", pid, time, prio );
 
-	write( '.' );
+	//write( '.' );
 
 	for(;;) {
 		for( i = 0; i < DELAY_LONG; ++i )
 			continue;
-		write( '.' );
+		//write( '.' );
 	}
 
 	time = gettime();
-	c_printf( "+++ Idle done @ %u!?!?!\n", time );
+	//c_printf( "+++ Idle done @ %u!?!?!\n", time );
 
 	exit( EXIT_FAILURE );
 }
@@ -1091,6 +1093,15 @@ void init( void ) {
 	** for our children (direct, or inherited) to exit.
 	*/
 
+	pid = fork( PRIO_STD );
+	if ( pid < 0 ) {
+		// perror
+	} else if ( pid == 0 ) {
+		status = exec( run_shell );
+		// should not return;
+		exit( EXIT_FAILURE );
+	}
+	
 	for(;;) {
 		status = wait( &upid, &estat );
 		if( status != U_SUCCESS ) {

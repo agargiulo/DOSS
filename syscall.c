@@ -294,6 +294,42 @@ static void _sys_exec( pcb_t *pcb ) {
 	pcb->context->eip = entry;
 }
 
+/*
+** _sys_execv - replace a process with a different program
+**
+** implements:  status_t execv(void (*entry)(void), int argc, char **argv);
+**
+** returns:
+**      does not return (if the attempt succeeds)
+**      failure status of the attempt (if the attempt fails)
+**
+** note that in our baseline system, this call cannot fail
+*/
+
+static void _sys_execv( pcb_t *pcb ) {
+	uint32_t entry;
+	int argc;
+	char **argv;
+	
+	// get the entry point of the new program
+
+	entry = ARG(pcb)[1];
+	argc = ARG(pcb)[2];
+	argv = (char**)ARG(pcb)[3];
+	
+	// now, reset the stack of the process
+
+	pcb->context = _create_stack( pcb->stack );
+	
+	// assign the new entry point
+
+	pcb->context->eip = entry;
+	
+	ARG(pcb)[1] = argc;
+	ARG(pcb)[2] = (uint32_t)argv;
+	
+}
+
 
 /*
 ** _sys_sleep - put the current process to sleep for some length of time
@@ -638,6 +674,7 @@ void _sys_init( void ) {
 	_syscalls[ SYS_write ]     = _sys_write;
 	_syscalls[ SYS_fork ]      = _sys_fork;
 	_syscalls[ SYS_exec ]      = _sys_exec;
+	_syscalls[ SYS_execv ]     = _sys_execv;
 	_syscalls[ SYS_sleep ]     = _sys_sleep;
 	_syscalls[ SYS_wait ]      = _sys_wait;
 	_syscalls[ SYS_kill ]      = _sys_kill;

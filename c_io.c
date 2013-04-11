@@ -186,6 +186,13 @@ void c_putchar( unsigned int c ){
 	case '\r':
 		curr_x = scroll_min_x;
 		break;
+		
+	case '\b':
+		if ( curr_x != scroll_min_x ) {
+			curr_x -= 1;
+			__c_putchar_at( curr_x, curr_y, ' ' );
+		}
+		break;
 
 	default:
 		__c_putchar_at( curr_x, curr_y, c );
@@ -643,9 +650,11 @@ int c_getchar( void ){
 
 	c = *__c_next_char & 0xff;
 	__c_next_char = __c_increment( __c_next_char );
+	
 	if( c != EOT ){
 		c_putchar( c );
 	}
+	
 	return c;
 }
 
@@ -658,12 +667,28 @@ int c_gets( char *buffer, unsigned int size ){
 		if( ch == EOT ){
 			break;
 		}
+		else if ( ch == '\b' )
+		{
+			if (count == 0)
+			{
+				// Don't underflow the buffer.
+				continue;
+			}
+			else
+			{
+				buffer--;
+				count -= 1;
+				size += 1;
+				continue;
+			}
+		}
 		*buffer++ = ch;
 		count += 1;
 		size -= 1;
 		if( ch == '\n' ){
 			break;
 		}
+		
 	}
 	*buffer = '\0';
 	return count;

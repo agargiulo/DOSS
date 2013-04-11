@@ -1,0 +1,12 @@
+Adding shell commands:
+
+1. Create the method prototype in shell.h. My current convention is 
+	void run_<command>( int argc, char **argv );
+	
+2. Create a stub in the shell.c's command_tab using the notation {"shellname", run<command>}, 
+and increment command_count to match the number of commands in command_tab. 
+
+3. Implement <command>.c file in the shell/ directory, ensuring that your method's main matches
+the prototype you defined in shell.h
+
+And of course, add the new files to the Makefile as shell/command.c and command.o

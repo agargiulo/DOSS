@@ -10,15 +10,18 @@
 # User supplied files
 #
 U_C_SRC = clock.c klibc.c process.c queue.c scheduler.c sio.c \
-	stack.c syscall.c system.c ulibc.c user.c pci/pci.c
+	stack.c syscall.c system.c ulibc.c user.c string.c shell/shell.c shell/ps.c shell/clear.c shell/help.c shell/reboot.c pci/pci.c
 U_C_OBJ = clock.o klibc.o process.o queue.o scheduler.o sio.o \
-	stack.o syscall.o system.o ulibc.o user.o pci.o
+	stack.o syscall.o system.o ulibc.o user.o string.o shell.o ps.o clear.o help.o reboot.o pci.o
 U_S_SRC = klibs.S ulibs.S
 U_S_OBJ = klibs.o ulibs.o
 U_H_SRC = include/clock.h include/common.h include/defs.h include/klib.h include/process.h include/queue.h \
-	include/scheduler.h include/sio.h include/stack.h include/syscall.h include/system.h include/types.h include/ulib.h include/user.h include/pci.h
+	include/scheduler.h include/sio.h include/stack.h include/syscall.h include/system.h include/types.h \
+	include/ulib.h include/user.h include/shell.h include/string.h include/pci.h
 
 U_LIBS	=
+
+VPATH = . shell pci
 
 #
 # User compilation/assembly definable options
@@ -177,7 +180,7 @@ prog.nl: prog.o
 #
 
 prog.dis: prog.o
-	dis prog.o > prog.dis
+	objdump -D prog.o > prog.dis
 
 #
 #	need this because we aren't giving header files to makedepend
@@ -227,8 +230,15 @@ syscall.o: ./include/startup.h /home/fac/wrc/include/x86arch.h
 system.o: ./include/common.h ./include/system.h ./include/process.h
 system.o: ./include/clock.h ./include/stack.h ./include/bootstrap.h
 system.o: ./include/syscall.h ./include/sio.h ./include/queue.h
-system.o: ./include/scheduler.h ./include/startup.h
+system.o: ./include/scheduler.h ./include/pci.h ./include/startup.h
 system.o: /home/fac/wrc/include/x86arch.h ./include/user.h ./include/ulib.h
 ulibc.o: ./include/common.h
 user.o: ./include/common.h ./include/user.h ./include/c_io.h
-pci.o:	./include/common.h ./include/pci.h
+user.o: ./include/shell.h
+string.o: ./include/string.h ./include/common.h
+shell/shell.o: ./include/shell.h ./include/common.h ./include/string.h
+shell/ps.o: ./include/common.h
+shell/clear.o: ./include/common.h
+shell/help.o: ./include/common.h
+shell/reboot.o: ./include/common.h ./include/string.h ./include/shell.h
+pci/pci.o: ./include/common.h ./include/pci.h ./include/startup.h
