@@ -317,7 +317,6 @@ static void _sys_execv( pcb_t *pcb ) {
 	argc = ARG(pcb)[2];
 	argv = ARG(pcb)[3];
 
-	c_printf("execv: %d %d %d\n", entry, argc, argv);
 	// now, reset the stack of the process
 
 	pcb->context = _create_stack( pcb->stack );

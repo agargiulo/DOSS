@@ -671,11 +671,12 @@ int c_gets( char *buffer, unsigned int size ){
 		{
 			if (count == 0)
 			{
+				// Don't underflow the buffer.
 				continue;
 			}
 			else
 			{
-				*buffer--;
+				buffer--;
 				count -= 1;
 				size += 1;
 				continue;

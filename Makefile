@@ -180,7 +180,7 @@ prog.nl: prog.o
 #
 
 prog.dis: prog.o
-	dis prog.o > prog.dis
+	objdump -D prog.o > prog.dis
 
 #
 #	need this because we aren't giving header files to makedepend
