@@ -36,6 +36,7 @@ void run_clear(int argc, char **argv);
 void run_help(int argc, char **argv);
 void run_ps(int argc, char **argv);
 void run_reboot(int argc, char **argv);
+void run_echo(int argc, char **argv);
 
 // Write a message to both the serial terminal and the console
 void wall_s(char *message);
