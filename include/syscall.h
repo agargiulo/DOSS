@@ -34,7 +34,7 @@
 #define	SYS_getpid		10
 #define	SYS_getppid		11
 #define	SYS_gettime		12
-#define SYS_execv		13
+#define	SYS_execv		13
 
 // number of "real" system calls
 
