@@ -1,7 +1,6 @@
 /*
 ** SCCS ID:	@(#)system.c	1.1	4/2/13
-**
-** File:	system.c
+** ** File:	system.c
 **
 ** Author:	4003-506 class of 20123
 **
@@ -22,6 +21,7 @@
 #include <sio.h>
 #include <scheduler.h>
 #include <pci.h>
+#include <8255x.h>
 
 #include <startup.h>
 #include <x86arch.h>
@@ -467,6 +467,7 @@ void _init( void ) {
 	_sched_init();
 	_clock_init();
 	_pci_init();
+	_net_init();
 
 	c_puts( "\n" );
 
