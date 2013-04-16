@@ -22,6 +22,7 @@
 #include <sio.h>
 #include <scheduler.h>
 #include <pci.h>
+#include <8255x.h>
 
 #include <startup.h>
 #include <x86arch.h>
@@ -445,8 +446,10 @@ void _init( void ) {
 	*/
 
 	c_io_init();
+	/*
 	c_setscroll( 0, 7, 99, 99 );
 	c_puts_at( 0, 6, "================================================================================" );
+	*/
 
 	/*
 	** 20123-SPECIFIC CODE STARTS HERE
@@ -469,6 +472,7 @@ void _init( void ) {
 	_sched_init();
 	_clock_init();
 	_pci_init();
+	_net_init();
 
 	c_puts( "\n" );
 

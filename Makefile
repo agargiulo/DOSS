@@ -12,17 +12,18 @@
 U_C_SRC = clock.c klibc.c process.c queue.c scheduler.c sio.c \
 	stack.c syscall.c system.c ulibc.c user.c string.c shell/shell.c \
 	shell/ps.c shell/clear.c shell/help.c shell/reboot.c shell/echo.c \
-	pci/pci.c
+	pci/pci.c network/8255x.c
+
 U_C_OBJ = clock.o klibc.o process.o queue.o scheduler.o sio.o \
-	stack.o syscall.o system.o ulibc.o user.o string.o shell/shell.o shell/ps.o \
-	shell/clear.o shell/help.o shell/reboot.o shell/echo.o pci/pci.o
+	stack.o syscall.o system.o ulibc.o user.o string.o shell/shell.o\
+	shell/ps.o shell/clear.o shell/help.o shell/reboot.o shell/echo.o\
+	pci/pci.o network/8255x.o
 
 U_S_SRC = klibs.S ulibs.S
 U_S_OBJ = klibs.o ulibs.o
 
 U_LIBS	=
 
-VPATH = . shell pci 
 #
 # User compilation/assembly definable options
 #
@@ -31,7 +32,7 @@ VPATH = . shell pci
 #	SP2_CONFIG		enable SP2-specific startup variations
 #	REPORT_MYSTERY_INTS	print a message on interrupt 0x27
 #
-USER_OPTIONS = -DCLEAR_BSS_SEGMENT -DSP2_CONFIG -DISR_DEBUGGING_CODE
+USER_OPTIONS = -DCLEAR_BSS_SEGMENT -DSP2_CONFIG
 
 #
 # YOU SHOULD NOT NEED TO CHANGE ANYTHING BELOW THIS POINT!!!
@@ -218,8 +219,9 @@ syscall.o: ./include/startup.h ./include/x86arch.h
 system.o: ./include/common.h ./include/system.h ./include/process.h
 system.o: ./include/clock.h ./include/stack.h ./include/bootstrap.h
 system.o: ./include/syscall.h ./include/sio.h ./include/queue.h
-system.o: ./include/scheduler.h ./include/pci.h ./include/startup.h
-system.o: ./include/x86arch.h ./include/user.h ./include/ulib.h
+system.o: ./include/scheduler.h ./include/pci.h ./include/8255x.h
+system.o: ./include/startup.h ./include/x86arch.h ./include/user.h
+system.o: ./include/ulib.h
 ulibc.o: ./include/common.h
 user.o: ./include/common.h ./include/user.h ./include/c_io.h
 user.o: ./include/shell.h
@@ -231,3 +233,4 @@ shell/help.o: ./include/common.h
 shell/reboot.o: ./include/common.h ./include/string.h ./include/shell.h
 shell/echo.o: ./include/common.h
 pci/pci.o: ./include/common.h ./include/pci.h ./include/startup.h
+network/8255x.o: ./include/common.h ./include/8255x.h
