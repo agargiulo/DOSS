@@ -10,19 +10,20 @@
 U_C_SRC = clock.c klibc.c process.c queue.c scheduler.c sio.c \
 	stack.c syscall.c system.c ulibc.c user.c string.c shell/shell.c \
 	shell/ps.c shell/clear.c shell/help.c shell/reboot.c shell/echo.c \
-	shell/halt.c shell/lspci.c pci/pci.c shell/test.c disk.c
+	shell/halt.c shell/lspci.c pci/pci.c shell/test.c disk.c \
+	network/8255x.c
 
 U_C_OBJ = clock.o klibc.o process.o queue.o scheduler.o sio.o \
 	stack.o syscall.o system.o ulibc.o user.o string.o shell/shell.o\
 	shell/ps.o shell/clear.o shell/help.o shell/reboot.o shell/echo.o\
-	shell/halt.o shell/lspci.o shell/test.o pci/pci.o disk.o
+	shell/halt.o shell/lspci.o shell/test.o pci/pci.o disk.o \
+	network/8255x.o
 
 U_S_SRC = klibs.S ulibs.S
 U_S_OBJ = klibs.o ulibs.o
 
 U_LIBS	=
 
-VPATH = . shell pci 
 #
 # User compilation/assembly definable options
 #
@@ -218,8 +219,9 @@ syscall.o: ./include/startup.h ./include/x86arch.h
 system.o: ./include/common.h ./include/system.h ./include/process.h
 system.o: ./include/clock.h ./include/stack.h ./include/bootstrap.h
 system.o: ./include/syscall.h ./include/sio.h ./include/queue.h
-system.o: ./include/scheduler.h ./include/pci.h ./include/startup.h
-system.o: ./include/x86arch.h ./include/user.h ./include/ulib.h
+system.o: ./include/scheduler.h ./include/pci.h ./include/8255x.h
+system.o: ./include/startup.h ./include/x86arch.h ./include/user.h
+system.o: ./include/ulib.h
 ulibc.o: ./include/common.h
 user.o: ./include/common.h ./include/user.h ./include/c_io.h
 user.o: ./include/shell.h
@@ -234,3 +236,4 @@ shell/lspci.o: ./include/common.h ./include/string.h ./include/pci.h
 pci/pci.o: ./include/common.h ./include/pci.h ./include/startup.h
 shell/test.o: ./include/disk.h ./include/common.h
 disk.o: ./include/common.h ./include/disk.h ./include/pci.h
+network/8255x.o: ./include/common.h ./include/8255x.h
