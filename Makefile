@@ -14,19 +14,15 @@ U_C_SRC = clock.c klibc.c process.c queue.c scheduler.c sio.c \
 	shell/ps.c shell/clear.c shell/help.c shell/reboot.c shell/echo.c \
 	pci/pci.c
 U_C_OBJ = clock.o klibc.o process.o queue.o scheduler.o sio.o \
-	stack.o syscall.o system.o ulibc.o user.o string.o shell.o ps.o \
-	clear.o help.o reboot.o echo.o pci.o
+	stack.o syscall.o system.o ulibc.o user.o string.o shell/shell.o shell/ps.o \
+	shell/clear.o shell/help.o shell/reboot.o shell/echo.o pci/pci.o
 
 U_S_SRC = klibs.S ulibs.S
 U_S_OBJ = klibs.o ulibs.o
-U_H_SRC = include/clock.h include/common.h include/defs.h include/klib.h include/process.h include/queue.h \
-	include/scheduler.h include/sio.h include/stack.h include/syscall.h include/system.h include/types.h \
-	include/ulib.h include/user.h include/shell.h include/string.h include/pci.h
 
 U_LIBS	=
 
-VPATH = . shell pci
-
+VPATH = . shell pci 
 #
 # User compilation/assembly definable options
 #
@@ -46,7 +42,7 @@ USER_OPTIONS = -DCLEAR_BSS_SEGMENT -DSP2_CONFIG -DISR_DEBUGGING_CODE
 #
 # We only want to include from the current directory and ~wrc/include
 #
-INCLUDES = -I. -I/home/fac/wrc/include -I./include
+INCLUDES = -I./include
 
 #
 # Compilation/assembly/linking commands and options
@@ -87,14 +83,14 @@ LD = ld
 .S.o:
 	$(CPP) $(CPPFLAGS) -o $*.s $*.S
 	$(AS) -o $*.o $*.s -a=$*.lst
-	$(RM) -f $*.s
+	$(RM) $*.s
 
 .s.b:
 	$(AS) -o $*.o $*.s -a=$*.lst
 	$(LD) -Ttext 0x0 -s --oformat binary -e begtext -o $*.b $*.o
 
 .c.o:
-	$(CC) $(CFLAGS) -c $*.c
+	$(CC) $(CFLAGS) -c $*.c -o $*.o
 
 # Binary/source file for system bootstrap code
 
@@ -127,14 +123,8 @@ SOURCES = $(BOOT_SRC) $(S_SRC) $(C_SRC)
 # Default target:  usb.image
 #
 
-usb.image: bootstrap.b prog.b prog.nl BuildImage Offsets #prog.dis 
+usb.image: bootstrap.b prog.b BuildImage
 	./BuildImage -d usb -o usb.image -b bootstrap.b prog.b 0x10000
-
-floppy.image: bootstrap.b prog.b prog.nl BuildImage Offsets #prog.dis 
-	./BuildImage -d floppy -o floppy.image -b bootstrap.b prog.b 0x10000
-
-prog.out: $(OBJECTS)
-	$(LD) -o prog.out $(OBJECTS)
 
 prog.o:	$(OBJECTS)
 	$(LD) -o prog.o -Ttext 0x10000 $(OBJECTS) $(U_LIBS)
@@ -170,7 +160,7 @@ Offsets:	Offsets.c include/common.h include/queue.h include/process.h
 #
 
 clean:
-	rm -f *.nl *.lst *.b *.o *.image *.dis BuildImage Offsets
+	$(RM) *.nl *.lst *.b *.o **/*.o *.image *.dis BuildImage Offsets
 
 #
 # Create a printable namelist from the prog.o file
@@ -187,12 +177,6 @@ prog.dis: prog.o
 	objdump -D prog.o > prog.dis
 
 #
-#	need this because we aren't giving header files to makedepend
-#
-
-common.h:	include/defs.h include/types.h include/c_io.h include/support.h include/system.h include/klib.h include/ulib.h
-
-#
 #       makedepend is a program which creates dependency lists by
 #       looking at the #include lines in the source files
 #
@@ -207,13 +191,13 @@ startup.o: ./include/bootstrap.h
 isr_stubs.o: ./include/bootstrap.h
 ulibs.o: ./include/syscall.h ./include/common.h
 c_io.o: ./include/c_io.h ./include/startup.h ./include/support.h
-c_io.o: /home/fac/wrc/include/x86arch.h
+c_io.o: ./include/x86arch.h
 support.o: ./include/startup.h ./include/support.h ./include/c_io.h
-support.o: /home/fac/wrc/include/x86arch.h ./include/bootstrap.h
-clock.o: ./include/common.h /home/fac/wrc/include/x86arch.h
-clock.o: ./include/startup.h ./include/clock.h ./include/process.h
-clock.o: ./include/stack.h ./include/queue.h ./include/scheduler.h
-clock.o: ./include/sio.h ./include/syscall.h
+support.o: ./include/x86arch.h ./include/bootstrap.h
+clock.o: ./include/common.h ./include/x86arch.h ./include/startup.h
+clock.o: ./include/clock.h ./include/process.h ./include/stack.h
+clock.o: ./include/queue.h ./include/scheduler.h ./include/sio.h
+clock.o: ./include/syscall.h
 klibc.o: ./include/common.h ./include/queue.h ./include/stack.h
 process.o: ./include/common.h ./include/process.h ./include/clock.h
 process.o: ./include/stack.h ./include/queue.h
@@ -225,17 +209,17 @@ scheduler.o: ./include/clock.h ./include/stack.h ./include/queue.h
 sio.o: ./include/common.h ./include/sio.h ./include/queue.h
 sio.o: ./include/process.h ./include/clock.h ./include/stack.h
 sio.o: ./include/scheduler.h ./include/system.h ./include/startup.h
-sio.o: /home/fac/wrc/include/uart.h /home/fac/wrc/include/x86arch.h
+sio.o: ./include/uart.h ./include/x86arch.h
 stack.o: ./include/common.h ./include/stack.h ./include/queue.h
 syscall.o: ./include/common.h ./include/syscall.h ./include/process.h
 syscall.o: ./include/clock.h ./include/stack.h ./include/queue.h
 syscall.o: ./include/scheduler.h ./include/sio.h ./include/support.h
-syscall.o: ./include/startup.h /home/fac/wrc/include/x86arch.h
+syscall.o: ./include/startup.h ./include/x86arch.h
 system.o: ./include/common.h ./include/system.h ./include/process.h
 system.o: ./include/clock.h ./include/stack.h ./include/bootstrap.h
 system.o: ./include/syscall.h ./include/sio.h ./include/queue.h
 system.o: ./include/scheduler.h ./include/pci.h ./include/startup.h
-system.o: /home/fac/wrc/include/x86arch.h ./include/user.h ./include/ulib.h
+system.o: ./include/x86arch.h ./include/user.h ./include/ulib.h
 ulibc.o: ./include/common.h
 user.o: ./include/common.h ./include/user.h ./include/c_io.h
 user.o: ./include/shell.h
