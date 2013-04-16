@@ -21,6 +21,27 @@
 #define REG_CLASS	0xB
 #define REG_SUBCLASS	0xA
 
+// Globals
+#define MAX_DEVICES	32
+
+typedef struct device {
+	ushort_t bus;
+	ushort_t slot;
+	ushort_t func;
+	ushort_t reg;
+
+	ushort_t vendor;
+	ushort_t device;
+	ubyte_t class;
+	ubyte_t subclass;
+} device_t;
+
+uint8_t device_count;
+
+device_t device_tab[MAX_DEVICES];
+
+// Load the device table
+
 void _pci_init( void );
 
 // PCI Configuration Read Methods

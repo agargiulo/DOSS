@@ -23,8 +23,10 @@ void _pci_init( void )
 	ubyte_t class;
 	ubyte_t subclass;
 
-	c_puts("PCI\n");
-
+	c_puts(" pci");
+	
+	device_count = 0;
+	
 	for(bus = 0; bus < 256; bus++)
 	{
 		for(slot = 0; slot < 256; slot++)
@@ -37,22 +39,11 @@ void _pci_init( void )
 					device = pci_read(bus, slot, func, REG_DEVICE);
 					class = pci_readb(bus, slot, func, REG_CLASS);
 					subclass = pci_readb(bus, slot, func, REG_SUBCLASS);
-
-					switch(class)
-					{
-						case (MASS_STORAGE):
-							c_puts("MASS STORAGE DEVICE FOUND\n");
-							break;
-						case (NETWORK):
-							c_puts("NETWORK DEVICE FOUND\n");
-							break;
-						case (DISPLAY):
-							c_puts("DISPLAY DEVICE FOUND\n");
-							break;
-						default:
-							//Unsupported Device
-							break;
-					}
+					
+					device_t d = { bus, slot, func, reg, 
+						vendor, device, class, subclass };
+					device_tab[device_count++] = d;
+					
 				}
 			}
 		}
