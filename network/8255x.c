@@ -1,9 +1,19 @@
 /*
+<<<<<<< HEAD
  * File: network/8255x.c
  *
  * Author: Anthony Gargiulo (20123)
  *
  * Description: Driver for the Intel Pro 100 8255x (rev 8) card
+=======
+ * File:	?
+ *
+ * Author:	4003-506 class of 20123
+ *
+ * Contributor:
+ *
+ * Description:	?
+>>>>>>> Basic things for the 8255x card, and a few other minor changes
  */
 
 #define	__SP2_KERNEL__

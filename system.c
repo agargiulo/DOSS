@@ -1,7 +1,6 @@
 /*
 ** SCCS ID:	@(#)system.c	1.1	4/2/13
-**
-** File:	system.c
+** ** File:	system.c
 **
 ** Author:	4003-506 class of 20123
 **
