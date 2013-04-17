@@ -16,7 +16,6 @@ void _pci_init( void )
 	ushort_t bus;
 	ushort_t slot;
 	ushort_t func;
-	ushort_t reg;
 
 	ushort_t vendor;
 	ushort_t device;
@@ -29,7 +28,7 @@ void _pci_init( void )
 	
 	for(bus = 0; bus < 256; bus++)
 	{
-		for(slot = 0; slot < 256; slot++)
+		for(slot = 0; slot < 32; slot++)
 		{
 			for(func = 0; func < 8; func++)
 			{
@@ -40,8 +39,7 @@ void _pci_init( void )
 					class = pci_readb(bus, slot, func, REG_CLASS);
 					subclass = pci_readb(bus, slot, func, REG_SUBCLASS);
 					
-					device_t d = { bus, slot, func, reg, 
-						vendor, device, class, subclass };
+					device_t d = { bus, slot, func, vendor, device, class, subclass };
 					device_tab[device_count++] = d;
 					
 				}
