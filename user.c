@@ -824,18 +824,13 @@ void idle( void ) {
 	int i;
 	pid_t pid;
 	prio_t prio;
-	time_t time;
 	ustatus_t status;
 
 	pid = getpid();
-	time = gettime();
 	status = getprio( pid, &prio );
 	if( status != U_SUCCESS ) {
 		prt_ustat( "idle, getprio() status %s\n", status );
 	}
-	//c_printf( "Idle (%d) started @ %u, prio %d\n", pid, time, prio );
-
-	//write( '.' );
 
 	for(;;) {
 		for( i = 0; i < DELAY_LONG; ++i )
@@ -843,8 +838,6 @@ void idle( void ) {
 		//write( '.' );
 	}
 
-	time = gettime();
-	//c_printf( "+++ Idle done @ %u!?!?!\n", time );
 
 	exit( EXIT_FAILURE );
 }
