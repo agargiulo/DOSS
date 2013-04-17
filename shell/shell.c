@@ -37,13 +37,14 @@ typedef struct shell_cmd {
 
 char *ps1 = "C:\\Users\\team1>";
 
-int command_count = 5;
+int command_count = 6;
 shell_cmd command_tab[] = {
 	{"ps", run_ps},
 	{"clear", run_clear},
 	{"help", run_help},
 	{"reboot", run_reboot},
-	{"echo", run_echo}
+	{"echo", run_echo},
+	{"lspci", run_lspci}
 };
 
 char buffer[INPUT_LEN];
