@@ -42,6 +42,7 @@ void run_help( int argc, char **argv ) {
 	c_printf("Currently, the following commands are supported:\n");
 	c_printf("	-help: Display this dialog\n");
 	c_printf("	-clear: Clear the screen\n");
+	c_printf("	-lspci: List all of the PCI devices\n");
 	c_printf("	-reboot: Reboot the computer\n");
 	c_printf("Much more soon to come!\n");
 	
