@@ -12,11 +12,11 @@
 U_C_SRC = clock.c klibc.c process.c queue.c scheduler.c sio.c \
 	stack.c syscall.c system.c ulibc.c user.c string.c shell/shell.c \
 	shell/ps.c shell/clear.c shell/help.c shell/reboot.c shell/echo.c \
-	shell/lspci.c pci/pci.c
+	shell/lspci.c pci/pci.c shell/test.c disk.c
 U_C_OBJ = clock.o klibc.o process.o queue.o scheduler.o sio.o \
 	stack.o syscall.o system.o ulibc.o user.o string.o shell/shell.o\
 	shell/ps.o shell/clear.o shell/help.o shell/reboot.o shell/echo.o\
-	shell/lspci.o pci/pci.o
+	shell/lspci.o shell/test.o pci/pci.o disk.o
 
 U_S_SRC = klibs.S ulibs.S
 U_S_OBJ = klibs.o ulibs.o
@@ -233,3 +233,5 @@ shell/reboot.o: ./include/common.h ./include/string.h ./include/shell.h
 shell/echo.o: ./include/common.h
 shell/lspci.o: ./include/common.h ./include/string.h ./include/pci.h
 pci/pci.o: ./include/common.h ./include/pci.h ./include/startup.h
+shell/test.o: ./include/disk.h ./include/common.h
+disk.o: ./include/common.h ./include/disk.h ./include/pci.h
