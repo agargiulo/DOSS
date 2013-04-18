@@ -1,13 +1,11 @@
 /*
-** SCCS ID:	%W%	%G%
+** File: shell.c
 **
-** File:	shell.c
+** Author: Owen Royall-Kahin
 **
-** Author:	4003-506 class of 20123
+** Contributor: Anthony Gargiulo
 **
-** Contributor:
-**
-** Description:	Shell implementation for OS2
+** Description: Shell implementation for OS2
 */
 
 #include <shell.h>

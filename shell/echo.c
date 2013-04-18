@@ -1,13 +1,9 @@
 /*
-** SCCS ID:	%W%	%G%
+** File: shell/echo.c
 **
-** File:	?
+** Author: Owen Royall-Kahin
 **
-** Author:	4003-506 class of 20123
-**
-** Contributor:
-**
-** Description:	?
+** Description: echo command
 */
 
 #include <common.h>

@@ -1,13 +1,9 @@
 /*
-** SCCS ID:	%W%	%G%
+** File: shell/reboot.c
 **
-** File:	?
+** Author: Anthony Gargiulo
 **
-** Author:	4003-506 class of 20123
-**
-** Contributor:
-**
-** Description:	?
+** Description: reboots the computer using fun triple-fault magic
 */
 #include <common.h>
 #include <string.h>

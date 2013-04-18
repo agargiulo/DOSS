@@ -1,6 +1,4 @@
 #
-# SCCS ID: @(#)Makefile	1.15	4/2/13
-#
 # Makefile to control the compiling, assembling and linking of
 # standalone programs in the DSL.  Used for both 4003-406 and
 # 4003-506 (with appropriate tweaking).
