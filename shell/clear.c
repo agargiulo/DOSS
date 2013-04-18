@@ -1,13 +1,9 @@
 /*
-** SCCS ID:	%W%	%G%
+** File: shell/clear.c
 **
-** File:	?
+** Author: Anthony Gargiulo
 **
-** Author:	4003-506 class of 20123
-**
-** Contributor:
-**
-** Description:	?
+** Description: clears the screen in the shell
 */
 
 #include <common.h>
