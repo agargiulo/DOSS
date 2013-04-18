@@ -108,13 +108,6 @@ static void _clock_isr( int vector, int code ) {
 		--(_current->quantum);
 	}
 
-	// Approximately every 20 seconds, dump the queues, and
-	// print the contents of the SIO buffers.
-
-	if( (_system_time % seconds_to_ticks(20)) == 0 ) {
-		_q_dump_all();
-	}
-
 	// tell the PIC we're done
 
 	__outb( PIC_MASTER_CMD_PORT, PIC_EOI );
