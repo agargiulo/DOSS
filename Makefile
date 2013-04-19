@@ -237,3 +237,4 @@ pci/pci.o: ./include/common.h ./include/pci.h ./include/startup.h
 shell/test.o: ./include/disk.h ./include/common.h
 disk.o: ./include/common.h ./include/disk.h ./include/pci.h
 network/8255x.o: ./include/common.h ./include/pci.h ./include/8255x.h
+shell/nettest.o: ./include/common.h ./include/8255x.h

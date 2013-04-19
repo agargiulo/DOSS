@@ -62,6 +62,7 @@
  * Prototypes
  */
 void _net_init(void);
+void net_pci_dump(void);
 
 #endif
 
