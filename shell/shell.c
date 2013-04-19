@@ -44,7 +44,8 @@ shell_cmd command_tab[] = {
 	{"echo", run_echo},
 	{"lspci", run_lspci},
 	{"test", run_test},
-	{"halt", run_halt}
+	{"halt", run_halt},
+	{"nettest", run_nettest}
 };
 
 char buffer[INPUT_LEN];
