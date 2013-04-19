@@ -21,8 +21,6 @@ void _pci_init( void )
 	ushort_t device;
 	ubyte_t class;
 	ubyte_t subclass;
-
-	c_puts(" pci");
 	
 	device_count = 0;
 	
@@ -46,6 +44,8 @@ void _pci_init( void )
 			}
 		}
 	}
+
+	c_puts(" pci");
 }
 
 ulong_t pci_readl(ushort_t bus, ushort_t slot, ushort_t func, ushort_t reg)

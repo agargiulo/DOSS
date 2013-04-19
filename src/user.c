@@ -1090,7 +1090,7 @@ void init( void ) {
 	if ( pid < 0 ) {
 		// perror
 	} else if ( pid == 0 ) {
-		status = exec( run_shell );
+		//status = exec( run_shell );
 		// should not return;
 		exit( EXIT_FAILURE );
 	}

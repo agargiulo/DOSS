@@ -3,21 +3,32 @@
 # standalone programs in the DSL.  Used for both 4003-406 and
 # 4003-506 (with appropriate tweaking).
 #
-
 #
 # User supplied files
 #
-U_C_SRC = clock.c klibc.c process.c queue.c scheduler.c sio.c \
-	stack.c syscall.c system.c ulibc.c user.c string.c shell/shell.c \
-	shell/ps.c shell/clear.c shell/help.c shell/reboot.c shell/echo.c \
-	shell/lspci.c pci/pci.c shell/test.c disk.c
-U_C_OBJ = clock.o klibc.o process.o queue.o scheduler.o sio.o \
-	stack.o syscall.o system.o ulibc.o user.o string.o shell/shell.o\
-	shell/ps.o shell/clear.o shell/help.o shell/reboot.o shell/echo.o\
-	shell/lspci.o shell/test.o pci/pci.o disk.o
+# Various directories
+SRCPATH = src
+BUILDPATH = bin
+INCPATH = include
+SHELL_PATH = shell
+NETWORK_PATH = network
+PCI_PATH = pci
 
-U_S_SRC = klibs.S ulibs.S
-U_S_OBJ = klibs.o ulibs.o
+U_C_SHELL_SRC = $(wildcard $(SRCPATH)/$(SHELL_PATH)/*.c)
+U_C_NETWORK_SRC = $(wildcard $(SRCPATH)/$(NETWORK_PATH)/*.c)
+U_C_PCI_SRC = $(wildcard $(SRCPATH)/$(PCI_PATH)/*.c)
+
+# The src files before we append src/ to them
+U_C_ORG_SRC = clock.c klibc.c process.c queue.c scheduler.c sio.c \
+	stack.c syscall.c system.c ulibc.c user.c string.c
+
+U_C_SRC = $(foreach src, $(U_C_ORG_SRC),$(SRCPATH)/$(src)) \
+$(U_C_SHELL_SRC) $(U_C_NETWORK_SRC) $(U_C_PCI_SRC)
+
+U_C_OBJ = $(patsubst $(SRCPATH)/%.c,$(BUILDPATH)/%.o, $(U_C_SRC))
+
+U_S_SRC = $(foreach src, klibs.S ulibs.S,$(SRCPATH)/$(src))
+U_S_OBJ = $(patsubst $(SRCPATH)/%.S,$(BUILDPATH)/%.o, $(U_S_SRC))
 
 U_LIBS	=
 
@@ -41,7 +52,7 @@ USER_OPTIONS = -DCLEAR_BSS_SEGMENT -DSP2_CONFIG
 #
 # We only want to include from the current directory and ~wrc/include
 #
-INCLUDES = -I./include
+INCLUDES = -I$(INCPATH)
 
 #
 # Compilation/assembly/linking commands and options
@@ -88,27 +99,23 @@ LD = ld
 	$(AS) -o $*.o $*.s -a=$*.lst
 	$(LD) -Ttext 0x0 -s --oformat binary -e begtext -o $*.b $*.o
 
-.c.o:
+$(SRCPATH)/%.c$(BUILDPATH)/%.o:
 	$(CC) $(CFLAGS) -c $*.c -o $*.o
 
 # Binary/source file for system bootstrap code
 
-BOOT_OBJ = bootstrap.b
-BOOT_SRC = bootstrap.S
+BOOT_OBJ = $(BUILDPATH)/bootstrap.b
+BOOT_SRC = $(SRCPATH)/bootstrap.S
 
 # Assembly language object/source files
 
-S_OBJ = startup.o isr_stubs.o $(U_S_OBJ)
-S_SRC =	startup.S isr_stubs.S $(U_S_SRC)
+S_OBJ = $(foreach obj, startup.o isr_stubs.o,$(BUILDPATH)/$(obj)) $(U_S_OBJ)
+S_SRC = $(foreach src, startup.S isr_stubs.S,$(SRCPATH)/$(src)) $(U_S_SRC)
 
 # C object/source files
 
-C_OBJ =	c_io.o support.o $(U_C_OBJ)
-C_SRC =	c_io.c support.c $(U_C_SRC)
-
-# Header files
-
-H_SRC = include/bootstrap.h include/c_io.h include/startup.h include/support.h $(U_H_SRC)
+C_OBJ = $(foreach obj, c_io.o support.o,$(BUILDPATH)/$(obj)) $(U_C_OBJ)
+C_SRC = $(foreach src, c_io.c support.c,$(SRCPATH)/$(src)) $(U_C_SRC)
 
 # Collections of files
 
@@ -122,23 +129,36 @@ SOURCES = $(BOOT_SRC) $(S_SRC) $(C_SRC)
 # Default target:  usb.image
 #
 
-usb.image: bootstrap.b prog.b BuildImage
-	./BuildImage -d usb -o usb.image -b bootstrap.b prog.b 0x10000
+usb.image: bin/bootstrap.b prog.b BuildImage
+	./BuildImage -d usb -o usb.image -b $(BUILDPATH)/bootstrap.b $(BUILDPATH)/prog.b 0x10000
 
-prog.o:	$(OBJECTS)
-	$(LD) -o prog.o -Ttext 0x10000 $(OBJECTS) $(U_LIBS)
+bin/bootstrap.b: $(BOOT_SRC)
+	$(CPP) $(CPPFLAGS) -o $*.s $<
+	$(AS) -o $*.o $*.s -a=$*.lst
+	$(LD) -Ttext 0x0 -s --oformat binary -e begtext -o $*.b $*.o
+	$(RM) $(foreach bin, lst o s,$*.$(bin))
 
-prog.b:	prog.o
-	$(LD) -o prog.b -s --oformat binary -Ttext 0x10000 prog.o
+test:
+	@echo Objects:
+	@echo $(OBJECTS)
+	@echo
+	@echo U_S_OBJ:
+	@echo $(U_S_OBJ)
+	@echo
+	@echo Sources:
+	@echo $(SOURCES)
+
+prog.o: $(OBJECTS)
+	$(LD) -o $(BUILDPATH)/prog.o -Ttext 0x10000 $(OBJECTS) $(U_LIBS)
+
+prog.b: prog.o
+	$(LD) -o $(BUILDPATH)/prog.b -s --oformat binary -Ttext 0x10000 $(BUILDPATH)/prog.o
 
 #
 # Targets for copying bootable image onto boot devices
 #
 
-floppy:	floppy.image
-	dd if=floppy.image of=/dev/fd0
-
-usb:	usb.image
+usb: usb.image
 	dd if=usb.image of=/local/devices/disk
 
 #
@@ -148,10 +168,10 @@ usb:	usb.image
 # as for the standalone binaries.
 #
 
-BuildImage:	BuildImage.c
+BuildImage: $(SRCPATH)/BuildImage.c
 	$(CC) -o BuildImage BuildImage.c
 
-Offsets:	Offsets.c include/common.h include/queue.h include/process.h
+Offsets: $(SRCPATH)/Offsets.c $(foreach header, common.h queue.h process.h,$(INCPATH)/$(header))
 	$(CC) $(INCLUDES) -o Offsets Offsets.c
 
 #
@@ -159,21 +179,21 @@ Offsets:	Offsets.c include/common.h include/queue.h include/process.h
 #
 
 clean:
-	$(RM) *.nl *.lst *.b *.o **/*.o *.image *.dis BuildImage Offsets
+	$(RM) **/*.nl **/*.lst **/*.b **/*.o *.image *.dis BuildImage Offsets
 
 #
 # Create a printable namelist from the prog.o file
 #
 
-prog.nl: prog.o
-	nm -Bng prog.o | pr -w80 -3 > prog.nl
+prog.nl: $(BUILDPATH)/prog.o
+	nm -Bng $(BUILDPATH)/prog.o | pr -w80 -3 > prog.nl
 
 #
 # Generate a disassembly
 #
 
-prog.dis: prog.o
-	objdump -D prog.o > prog.dis
+prog.dis: $(BUILDPATH)/prog.o
+	objdump -D $(BUILDPATH)/prog.o > prog.dis
 
 #
 #       makedepend is a program which creates dependency lists by
@@ -182,54 +202,53 @@ prog.dis: prog.o
 
 depend:
 	makedepend -- $(CFLAGS) -- $(SOURCES)
+	@#./fix_makedepend
+
+.PHONY: Makefile bootstrap.b bin/klibs.o
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
-bootstrap.o: ./include/bootstrap.h
-startup.o: ./include/bootstrap.h
-isr_stubs.o: ./include/bootstrap.h
-ulibs.o: ./include/syscall.h ./include/common.h
-c_io.o: ./include/c_io.h ./include/startup.h ./include/support.h
-c_io.o: ./include/x86arch.h
-support.o: ./include/startup.h ./include/support.h ./include/c_io.h
-support.o: ./include/x86arch.h ./include/bootstrap.h
-clock.o: ./include/common.h ./include/x86arch.h ./include/startup.h
-clock.o: ./include/clock.h ./include/process.h ./include/stack.h
-clock.o: ./include/queue.h ./include/scheduler.h ./include/sio.h
-clock.o: ./include/syscall.h
-klibc.o: ./include/common.h ./include/queue.h ./include/stack.h
-process.o: ./include/common.h ./include/process.h ./include/clock.h
-process.o: ./include/stack.h ./include/queue.h
-queue.o: ./include/common.h ./include/queue.h ./include/process.h
-queue.o: ./include/clock.h ./include/stack.h ./include/syscall.h
-queue.o: ./include/sio.h ./include/scheduler.h
-scheduler.o: ./include/common.h ./include/scheduler.h ./include/process.h
-scheduler.o: ./include/clock.h ./include/stack.h ./include/queue.h
-sio.o: ./include/common.h ./include/sio.h ./include/queue.h
-sio.o: ./include/process.h ./include/clock.h ./include/stack.h
-sio.o: ./include/scheduler.h ./include/system.h ./include/startup.h
-sio.o: ./include/uart.h ./include/x86arch.h
-stack.o: ./include/common.h ./include/stack.h ./include/queue.h
-syscall.o: ./include/common.h ./include/syscall.h ./include/process.h
-syscall.o: ./include/clock.h ./include/stack.h ./include/queue.h
-syscall.o: ./include/scheduler.h ./include/sio.h ./include/support.h
-syscall.o: ./include/startup.h ./include/x86arch.h
-system.o: ./include/common.h ./include/system.h ./include/process.h
-system.o: ./include/clock.h ./include/stack.h ./include/bootstrap.h
-system.o: ./include/syscall.h ./include/sio.h ./include/queue.h
-system.o: ./include/scheduler.h ./include/pci.h ./include/startup.h
-system.o: ./include/x86arch.h ./include/user.h ./include/ulib.h
-ulibc.o: ./include/common.h
-user.o: ./include/common.h ./include/user.h ./include/c_io.h
-user.o: ./include/shell.h
-string.o: ./include/string.h ./include/common.h
-shell/shell.o: ./include/shell.h ./include/common.h ./include/string.h
-shell/ps.o: ./include/common.h
-shell/clear.o: ./include/common.h
-shell/help.o: ./include/common.h
-shell/reboot.o: ./include/common.h ./include/string.h ./include/shell.h
-shell/echo.o: ./include/common.h
-shell/lspci.o: ./include/common.h ./include/string.h ./include/pci.h
-pci/pci.o: ./include/common.h ./include/pci.h ./include/startup.h
-shell/test.o: ./include/disk.h ./include/common.h
-disk.o: ./include/common.h ./include/disk.h ./include/pci.h
+bin/bootstrap.o: include/bootstrap.h
+bin/startup.o: include/bootstrap.h
+bin/isr_stubs.o: include/bootstrap.h
+bin/ulibs.o: include/syscall.h include/common.h
+bin/c_io.o: include/c_io.h include/startup.h include/support.h
+bin/c_io.o: include/x86arch.h
+bin/support.o: include/startup.h include/support.h include/c_io.h
+bin/support.o: include/x86arch.h include/bootstrap.h
+bin/clock.o: include/common.h include/x86arch.h include/startup.h
+bin/clock.o: include/clock.h include/process.h include/stack.h
+bin/clock.o: include/queue.h include/scheduler.h include/sio.h
+bin/clock.o: include/syscall.h
+bin/klibc.o: include/common.h include/queue.h include/stack.h
+bin/process.o: include/common.h include/process.h include/clock.h
+bin/process.o: include/stack.h include/queue.h
+bin/queue.o: include/common.h include/queue.h include/process.h
+bin/queue.o: include/clock.h include/stack.h include/syscall.h include/sio.h
+bin/queue.o: include/scheduler.h
+bin/scheduler.o: include/common.h include/scheduler.h include/process.h
+bin/scheduler.o: include/clock.h include/stack.h include/queue.h
+bin/sio.o: include/common.h include/sio.h include/queue.h include/process.h
+bin/sio.o: include/clock.h include/stack.h include/scheduler.h
+bin/sio.o: include/system.h include/startup.h include/uart.h
+bin/sio.o: include/x86arch.h
+bin/stack.o: include/common.h include/stack.h include/queue.h
+bin/syscall.o: include/common.h include/syscall.h include/process.h
+bin/syscall.o: include/clock.h include/stack.h include/queue.h
+bin/syscall.o: include/scheduler.h include/sio.h include/support.h
+bin/syscall.o: include/startup.h include/x86arch.h
+bin/system.o: include/common.h include/system.h include/process.h
+bin/system.o: include/clock.h include/stack.h include/bootstrap.h
+bin/system.o: include/syscall.h include/sio.h include/queue.h
+bin/system.o: include/scheduler.h include/pci.h include/startup.h
+bin/system.o: include/x86arch.h include/user.h include/ulib.h
+bin/ulibc.o: include/common.h
+bin/user.o: include/common.h include/user.h include/c_io.h include/shell.h
+bin/string.o: include/string.h include/common.h
+bin/shell/clear.o: include/common.h
+bin/shell/echo.o: include/common.h
+bin/shell/help.o: include/common.h
+bin/shell/ps.o: include/common.h
+bin/shell/reboot.o: include/common.h include/string.h include/shell.h
+bin/shell/shell.o: include/shell.h include/common.h include/string.h
+bin/pci/pci.o: include/common.h include/pci.h include/startup.h

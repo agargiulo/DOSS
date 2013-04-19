@@ -28,6 +28,7 @@ typedef struct device {
 	ushort_t bus;
 	ushort_t slot;
 	ushort_t func;
+	
 	ushort_t vendor;
 	ushort_t device;
 	ubyte_t class;
