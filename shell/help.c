@@ -40,6 +40,7 @@ void run_help( int argc, char **argv ) {
 	c_printf("--> clear: Clear the screen\n");
 	c_printf("--> lspci: List all of the PCI devices\n");
 	c_printf("--> reboot: Reboot the computer\n");
+	c_printf("--> halt: halt the computer\n");
 	c_printf("Much more soon to come!\n");
 	
 }
