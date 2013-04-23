@@ -43,7 +43,7 @@ void _net_init(void)
 	// In this case, the 8255x (device id 0x1229)
 	for (int i = 0; i < device_count; i++)
 	{
-		if (device_tab[i].device == 0x1229)
+		if (device_tab[i].device == 0x1229 || device_tab[i].device == 0x1019)
 		{
 			eth0 = &device_tab[i];
 		}
@@ -58,7 +58,7 @@ void net_pci_dump(void)
 	c_printf(" Status  : 0x%04x    Command  : 0x%04x\n",
 			pci_read(eth0->bus,eth0->slot,eth0->func, P_ETH_STATUS_REG),
 			pci_read(eth0->bus,eth0->slot,eth0->func, P_ETH_CMD_REG));
-	c_printf(" Class   : 0x%04x00     Rev ID  : 0x%02x\n",
+	c_printf(" Class   : 0x%02x0000     Rev ID  : 0x%02x\n",
 			eth0->class,
 			pci_readb(eth0->bus,eth0->slot,eth0->func, P_ETH_REV_ID));
 	c_printf("BIST: 0x%02x    Head Type: 0x%02x    Lat Timer: 0x%02x    Cache Line Size: 0x%02x\n",
