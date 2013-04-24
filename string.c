@@ -108,3 +108,32 @@ char * strncpy ( char * destination, const char * source, size_t num ) {
 	
 	return destination;
 }
+
+#define isspace(ch) ((ch) == ' ' || (ch) == '\t' || (ch) == '\r')
+#define isdigit(ch) ((ch) >= '0' && (ch) <= '9')
+int atoi ( char * string ) {
+	int num = 0;
+	int negative = 0;
+	while (isspace(*string))
+	{
+		string++;
+	}
+	if (*string == '-')
+	{
+		negative = 1;
+		string++;
+	}
+	else if (!isdigit(*string))
+	{
+		num = -1;
+	}
+	while (isdigit(*string))
+	{
+		num =  (num * 10) + (unsigned int) (*(string++) - '0');
+	}
+	if (negative)
+	{
+		num *= -1;
+	}
+	return num;
+}

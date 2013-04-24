@@ -1,9 +1,9 @@
 /*
-** File: shell/reboot.c
+** File: shell/halt.c
 **
 ** Author: Anthony Gargiulo
 **
-** Description: reboots the computer using fun triple-fault magic
+** Description: halts the computer
 */
 #include <common.h>
 #include <string.h>
@@ -34,8 +34,8 @@
 */
 
 // WILL NOT RETURN
-void run_reboot(int argc, char **argv) {
-	char *reboot_message = "System going down for reboot in ";
+void run_halt(int argc, char **argv) {
+	char *halt_message = "System going down for halt in ";
 	int countdown;
 
 	if (argc >= 2)
@@ -52,7 +52,7 @@ void run_reboot(int argc, char **argv) {
 		countdown = 9;
 	}
 
-	wall_s(reboot_message);
+	wall_s(halt_message);
 
 	write('\a');
 	for (; countdown > 0; --countdown)
@@ -67,5 +67,6 @@ void run_reboot(int argc, char **argv) {
 	wall_s("NOW");
 	sleep(ms_to_ticks(20));
 	write('\a');
-	__asm__("lidt 0");
+	__asm("cli");
+	for(;;) ;
 }
