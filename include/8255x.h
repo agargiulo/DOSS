@@ -14,6 +14,7 @@
 /*
  * General (C and/or assembly) definitions
  */
+
 /*
  * PCI Configuration Space
  */
@@ -27,7 +28,6 @@
 #define P_ETH_LAT_TIMER         0x0D    /* 1 Byte  */
 #define P_ETH_HEADER_TYPE       0x0E    /* 1 Byte  */
 #define P_ETH_BIST              0x0F    /* 1 Byte  */
-#define P_ETH_CSR_MEM_MAP_BAR   0X10    /* 4 Byte  */
 #define P_ETH_CSR_IO_MAP_BAR    0X14    /* 4 Bytes */
 #define P_ETH_FLASH_MEM_MAP_BAR 0x18    /* 4 Bytes */
 #define P_ETH_SUBSYS_VEND_ID    0x2C    /* 2 Bytes */
@@ -44,6 +44,25 @@
 #define P_ETH_POW_MAN_CSR       0xE0    /* 2 Bytes */
 #define P_ETH_DATA              0xE2    /* 1 Byte  */
 
+/*
+ * Control / Status Register Offsets
+ */
+#define E_CSR_SCB_STAT_WORD     0x00    /* 2 Bytes */
+#define E_CSR_SCB_COM_WORD      0x02    /* 2 Bytes */
+#define E_CSR_SCB_GEN_PTR       0x04    /* 4 Bytes */
+#define E_CSR_PORT              0x08    /* 4 Bytes */
+#define E_CSR_EEPROM_CON_REG    0x0E    /* 2 Bytes */
+#define E_CSR_MDI_CON_REG       0x10    /* 4 Bytes */
+#define E_CSR_RX_DMA_BYTES      0x14    /* 4 Bytes */
+#define E_CSR_FLO_CON_REG       0x1A    /* 2 Bytes */
+#define E_CSR_PMDR              0x1B    /* 1 Bytes */
+#define E_CSR_GEN_CON           0x1C    /* 1 Bytes */
+#define E_CSR_GEN_STAT          0x1D    /* 1 Bytes */
+#define E_CSR_FUNC_EV_REG       0x30    /* 4 Bytes */
+#define E_CSR_FUNC_EV_MSK_REG   0x34    /* 4 Bytes */
+#define E_CSR_FUNC_PRE_STAT_REG 0x38    /* 4 Bytes */
+#define E_CSR_FORCE_EV_REG      0x3C    /* 4 Bytes */
+
 #ifndef __SP2_ASM__
 
 /*
@@ -57,12 +76,14 @@
 /*
  * Globals
  */
+uint32_t CSR_BAR;
 
 /*
  * Prototypes
  */
 void _net_init(void);
 void net_pci_dump(void);
+void net_CSR_dump(void);
 
 #endif
 

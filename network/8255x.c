@@ -9,6 +9,7 @@
 #define	__SP2_KERNEL__
 
 #include <common.h>
+#include <startup.h>
 #include <pci.h>
 #include <8255x.h>
 
@@ -48,47 +49,43 @@ void _net_init(void)
 			eth0 = &device_tab[i];
 		}
 	}
+	CSR_BAR = pci_readl(eth0->bus, eth0->slot, eth0->func, P_ETH_CSR_IO_MAP_BAR);
+	
 	c_puts(" network\n");
 }
 
 
 void net_pci_dump(void)
 {
-	c_printf("device ID: 0x%04x    vendor ID: 0x%04x\n", eth0->device, eth0->vendor);
-	c_printf(" Status  : 0x%04x    Command  : 0x%04x\n",
-			pci_read(eth0->bus,eth0->slot,eth0->func, P_ETH_STATUS_REG),
-			pci_read(eth0->bus,eth0->slot,eth0->func, P_ETH_CMD_REG));
-	c_printf(" Class   : 0x%02x0000     Rev ID  : 0x%02x\n",
-			eth0->class,
-			pci_readb(eth0->bus,eth0->slot,eth0->func, P_ETH_REV_ID));
-	c_printf("BIST: 0x%02x    Head Type: 0x%02x    Lat Timer: 0x%02x    Cache Line Size: 0x%02x\n",
-			pci_readb(eth0->bus,eth0->slot,eth0->func, P_ETH_BIST),
-			pci_readb(eth0->bus,eth0->slot,eth0->func, P_ETH_HEADER_TYPE),
-			pci_readb(eth0->bus,eth0->slot,eth0->func, P_ETH_LAT_TIMER),
-			pci_readb(eth0->bus,eth0->slot,eth0->func, P_ETH_CACHE_LINE_SIZE));
-	c_printf("CSR Mem Mapped Base Address Register: 0x%08x\n",
-			pci_readl(eth0->bus, eth0->slot, eth0->func, P_ETH_CSR_MEM_MAP_BAR));
-	c_printf("CSR I/O Mapped Base Address Register: 0x%08x\n",
-			pci_readl(eth0->bus, eth0->slot, eth0->func, P_ETH_CSR_IO_MAP_BAR));
-	c_printf("Flash Mem Mapped Base Address Register: 0x%08x\n",
-			pci_readl(eth0->bus, eth0->slot, eth0->func, P_ETH_FLASH_MEM_MAP_BAR));
-	c_printf("Subsystem ID: 0x%04x    Subsystem Vendor ID: 0x%04x\n",
-			pci_read(eth0->bus,eth0->slot,eth0->func, P_ETH_SUBSYS_ID),
-			pci_read(eth0->bus,eth0->slot,eth0->func, P_ETH_SUBSYS_VEND_ID));
-	c_printf("Expanson ROM Base Address Register: 0x%08x\n",
-			pci_readl(eth0->bus, eth0->slot, eth0->func, P_ETH_EX_ROM_BAR));
-	c_printf("Cap_Ptr: 0x%02x\n",
-			pci_readb(eth0->bus, eth0->slot, eth0->func, P_ETH_CAP_PTR));
-	c_printf("Max Latency: 0x%02x    Min Grant: 0x%02x    Inter Pin: 0x%02x    Inter Line: 0x%02x\n",
-			pci_readb(eth0->bus,eth0->slot,eth0->func, P_ETH_MAX_LATENCY),
-			pci_readb(eth0->bus,eth0->slot,eth0->func, P_ETH_MIN_GRANT),
-			pci_readb(eth0->bus,eth0->slot,eth0->func, P_ETH_INT_PIN),
-			pci_readb(eth0->bus,eth0->slot,eth0->func, P_ETH_INT_LINE));
-	c_printf("Pow Man Cap: 0x%04x    Next Item Prt: 0x%02x    Cap ID: 0x%02x\n",
-			pci_read(eth0->bus,eth0->slot,eth0->func, P_ETH_POW_MAN_CAP),
-			pci_readb(eth0->bus,eth0->slot,eth0->func, P_ETH_NXT_ITM_PTR),
-			pci_readb(eth0->bus,eth0->slot,eth0->func, P_ETH_CAP_ID));
-	c_printf("Data: 0x%02x    Pow Man CSR: 0x%04x\n",
-			pci_readb(eth0->bus,eth0->slot,eth0->func, P_ETH_DATA),
-			pci_read(eth0->bus,eth0->slot,eth0->func, P_ETH_POW_MAN_CSR));
+	c_printf("Vendor ID:       0x%04x\n", eth0->vendor);
+	c_printf("Device ID:       0x%04x\n", eth0->device);
+	c_printf("Status:          0x%04x\n", pci_read(eth0->bus,eth0->slot,eth0->func, P_ETH_STATUS_REG));
+	c_printf("Command:         0x%04x\n", pci_read(eth0->bus,eth0->slot,eth0->func, P_ETH_CMD_REG));
+	c_printf("Class:           0x%02x0000\n", eth0->class);
+	c_printf("Rev ID:          0x%02x\n", pci_readb(eth0->bus,eth0->slot,eth0->func, P_ETH_REV_ID));
+	c_printf("BIST:            0x%02x\n", pci_readb(eth0->bus,eth0->slot,eth0->func, P_ETH_BIST));
+	c_printf("Head Type:       0x%02x\n", pci_readb(eth0->bus,eth0->slot,eth0->func, P_ETH_HEADER_TYPE));
+	c_printf("Lat Timer:       0x%02x\n", pci_readb(eth0->bus,eth0->slot,eth0->func, P_ETH_LAT_TIMER));
+	c_printf("Cache Line Size: 0x%02x\n", pci_readb(eth0->bus,eth0->slot,eth0->func, P_ETH_CACHE_LINE_SIZE));
+	c_printf("CSR IMap BAR:    0x%08x\n", CSR_BAR);
+	c_printf("Subsys ID:       0x%04x\n", pci_read(eth0->bus,eth0->slot,eth0->func, P_ETH_SUBSYS_ID));
+	c_printf("Subsys Vend ID:  0x%04x\n", pci_read(eth0->bus,eth0->slot,eth0->func, P_ETH_SUBSYS_VEND_ID));
+	c_printf("EEPROM BAR:      0x%08x\n", pci_readl(eth0->bus, eth0->slot, eth0->func, P_ETH_EX_ROM_BAR));
+	c_printf("Cap_Ptr:         0x%02x\n", pci_readb(eth0->bus, eth0->slot, eth0->func, P_ETH_CAP_PTR));
+	c_printf("Max Latency:     0x%02x\n", pci_readb(eth0->bus,eth0->slot,eth0->func, P_ETH_MAX_LATENCY));
+	c_printf("Min Grant:       0x%02x\n", pci_readb(eth0->bus,eth0->slot,eth0->func, P_ETH_MIN_GRANT));
+	c_printf("Inter Pin:       0x%02x\n", pci_readb(eth0->bus,eth0->slot,eth0->func, P_ETH_INT_PIN));
+	c_printf("Inter Line:      0x%02x\n", pci_readb(eth0->bus,eth0->slot,eth0->func, P_ETH_INT_LINE));
+	c_printf("Pow Man Cap:     0x%04x\n", pci_read(eth0->bus,eth0->slot,eth0->func, P_ETH_POW_MAN_CAP));
+	c_printf("Next Item Prt:   0x%02x\n", pci_readb(eth0->bus,eth0->slot,eth0->func, P_ETH_NXT_ITM_PTR));
+	c_printf("Cap ID:          0x%02x\n", pci_readb(eth0->bus,eth0->slot,eth0->func, P_ETH_CAP_ID));
+	c_printf("Data:            0x%02x\n", pci_readb(eth0->bus,eth0->slot,eth0->func, P_ETH_DATA));
+	c_printf("Pow Man CSR:     0x%04x\n", pci_read(eth0->bus,eth0->slot,eth0->func, P_ETH_POW_MAN_CSR));
+}
+
+void net_CSR_dump( void )
+{
+	c_printf("SCB Status Word:     0x%04x\n", __inw(CSR_BAR + E_CSR_SCB_STAT_WORD));
+	c_printf("SCB Command Word:    0x%04x\n", __inw(CSR_BAR + E_CSR_SCB_COM_WORD));
+	c_printf("SCB General Pointer: 0x%08x\n", __inw(CSR_BAR + E_CSR_SCB_GEN_PTR));
 }

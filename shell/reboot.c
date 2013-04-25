@@ -54,7 +54,6 @@ void run_reboot(int argc, char **argv) {
 
 	wall_s(reboot_message);
 
-	write('\a');
 	for (; countdown > 0; --countdown)
 	{
 		wall_ch( (char) countdown + 48);
@@ -66,6 +65,5 @@ void run_reboot(int argc, char **argv) {
 	}
 	wall_s("NOW");
 	sleep(ms_to_ticks(20));
-	write('\a');
 	__asm__("lidt 0");
 }

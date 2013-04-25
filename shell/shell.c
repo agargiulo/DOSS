@@ -35,7 +35,7 @@ typedef struct shell_cmd {
 
 char *ps1 = "C:\\Users\\team1>";
 
-int command_count = 8;
+int command_count = 9;
 shell_cmd command_tab[] = {
 	{"ps", run_ps},
 	{"clear", run_clear},

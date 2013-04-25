@@ -7,6 +7,7 @@
 */
 
 #include <common.h>
+#include <startup.h>
 #include <8255x.h>
 
 /*
@@ -35,4 +36,8 @@
 void run_nettest(int argc, char **argv)
 {
 	net_pci_dump();
+	c_puts("---MORE---");
+	c_getchar();
+	c_puts("\n");
+	net_CSR_dump();
 }
