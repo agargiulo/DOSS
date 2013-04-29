@@ -12,6 +12,7 @@
 #include <startup.h>
 #include <pci.h>
 #include <8255x.h>
+#include <net_handler.h>
 
 /*
  * PRIVATE DEFINITIONS
@@ -50,6 +51,20 @@ void _net_init(void)
 		}
 	}
 	CSR_BAR = pci_readl(eth0->bus, eth0->slot, eth0->func, P_ETH_CSR_IO_MAP_BAR);
+
+	__install_isr ( 0x2B, _net_handler );
+	uint8_t loadCUBaseCmd = 0x60;
+	uint8_t loadRUBaseCmd = 0x06;
+	__outb(CSR_BAR + E_CSR_SCB_GEN_PTR, 0x00000000);
+	__outb(CSR_BAR + E_CSR_SCB_COM_WORD, loadCUBaseCmd);
+
+	uint8_t SCB_com_byte;
+	while ((SCB_com_byte = __inb(CSR_BAR + E_CSR_SCB_COM_WORD)) != 0x0)
+	{
+		c_printf("SCB command byte: 0x%02x\n", SCB_com_byte);
+		__delay(10);
+	}
+	__outb(CSR_BAR + E_CSR_SCB_COM_WORD, loadRUBaseCmd);
 	
 	c_puts(" network\n");
 }
