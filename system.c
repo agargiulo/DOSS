@@ -470,6 +470,8 @@ void _init( void ) {
 
 	c_puts( "\n" );
 
+	_video_test();
+
 	/*
 	** Create the initial system ESP
 	**

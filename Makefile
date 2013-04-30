@@ -10,18 +10,24 @@
 U_C_SRC = clock.c klibc.c process.c queue.c scheduler.c sio.c \
 	stack.c syscall.c system.c ulibc.c user.c string.c shell/shell.c \
 	shell/ps.c shell/clear.c shell/help.c shell/reboot.c shell/echo.c \
-	shell/lspci.c pci/pci.c shell/test.c disk.c
+	shell/lspci.c pci/pci.c shell/test.c disk.c video/video.c
 U_C_OBJ = clock.o klibc.o process.o queue.o scheduler.o sio.o \
 	stack.o syscall.o system.o ulibc.o user.o string.o shell/shell.o\
 	shell/ps.o shell/clear.o shell/help.o shell/reboot.o shell/echo.o\
-	shell/lspci.o shell/test.o pci/pci.o disk.o
+	shell/lspci.o shell/test.o pci/pci.o disk.o video/video.o
 
-U_S_SRC = klibs.S ulibs.S
-U_S_OBJ = klibs.o ulibs.o
+U_S_SRC = klibs.S ulibs.S video/video_s.s
+U_S_OBJ = klibs.o ulibs.o video_s.o
 
 U_LIBS	=
 
-VPATH = . shell pci 
+VPATH = . shell pci video
+
+U_H_SRC = include/clock.h include/common.h include/defs.h include/klib.h \
+	  include/process.h include/queue.h include/scheduler.h include/sio.h \
+	  include/stack.h include/syscall.h include/system.h include/types.h \
+	  include/ulib.h include/user.h include/pci.h video/video_s.h
+
 #
 # User compilation/assembly definable options
 #
@@ -233,3 +239,4 @@ shell/lspci.o: ./include/common.h ./include/string.h ./include/pci.h
 pci/pci.o: ./include/common.h ./include/pci.h ./include/startup.h
 shell/test.o: ./include/disk.h ./include/common.h
 disk.o: ./include/common.h ./include/disk.h ./include/pci.h
+video/video.o: ./include/common.h ./include/video_s.h
