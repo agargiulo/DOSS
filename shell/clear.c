@@ -36,7 +36,13 @@ void run_clear( int argc, char **argv )
 {
 	for (uint8_t x = 0; x < 99; ++x)
 	{
-		for (uint8_t y = 0; y < 99; ++y)
+		uint8_t y;
+#ifdef ISR_DEBUGGING_CODE
+		y = 7;
+#else
+		y = 0;
+#endif
+		for (; y < 99; ++y)
 		{
 			c_putchar_at(x, y, ' ');
 		}

@@ -103,6 +103,11 @@ void net_pci_dump(void)
 	c_printf("EEPROM BAR-------0x%08x\n", eth_pci_readl(P_ETH_EX_ROM_BAR));
 	c_printf("Cap_Ptr----------0x%02x\n", eth_pci_readb(P_ETH_CAP_PTR));
 	c_printf("Max Latency------0x%02x\n", eth_pci_readb(P_ETH_MAX_LATENCY));
+#ifdef ISR_DEBUGGING_CODE
+	c_puts("---MORE---");
+	c_getchar();
+	c_puts("\n");
+#endif
 	c_printf("Min Grant--------0x%02x\n", eth_pci_readb(P_ETH_MIN_GRANT));
 	c_printf("Inter Pin--------0x%02x\n", eth_pci_readb(P_ETH_INT_PIN));
 	c_printf("Inter Line-------0x%02x\n", eth_pci_readb(P_ETH_INT_LINE));
