@@ -4,11 +4,9 @@
 
 void _video_test( void )
 {
-	c_puts("Entering Video Test...\n");
-	_video_set_mode_13();
-	//c_puts("Video Set Mode Complete\n");
-	_video_plot_pixel_test();
-	//c_puts("Plot Pixel Test Complete\n");
-	_video_set_mode_text();
-	c_puts("Video Test Successful...\n");
+	unsigned char *pixel = 0xa0000;
+	for(int i = 0; i < 32000; i++)
+	{
+		pixel[i] = 13;
+	}
 }
