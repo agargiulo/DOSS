@@ -49,7 +49,7 @@ void run_reboot(int argc, char **argv) {
 	}
 	else
 	{
-		countdown = 9;
+		countdown = 1;
 	}
 
 	wall_s(reboot_message);
@@ -57,13 +57,13 @@ void run_reboot(int argc, char **argv) {
 	for (; countdown > 0; --countdown)
 	{
 		wall_ch( (char) countdown + 48);
-		sleep(ms_to_ticks(20));
+		sleep(20);
 		wall_ch('.');
-		sleep(ms_to_ticks(20));
+		sleep(20);
 		wall_ch('.');
-		sleep(ms_to_ticks(20));
+		sleep(20);
 	}
 	wall_s("NOW");
-	sleep(ms_to_ticks(20));
+	sleep(20);
 	__asm__("lidt 0");
 }
