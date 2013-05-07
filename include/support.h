@@ -51,11 +51,11 @@ void ( *__install_isr( int vector, void ( *handler )( int vector, int code ) ) )
 ** Name:	__delay
 **
 ** Description:	Delays execution by counting for the specified number of
-**		tenths of a second.  If interrupts are enabled when this
+**		microseconds.  If interrupts are enabled when this
 **		is called, they remain enabled and interrupts may occur.
-** Arguments:	tenths of a second
+** Arguments:	microseconds
 */
-void __delay( int tenths );
+void __delay( int micros );
 
 
 #endif

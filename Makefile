@@ -19,8 +19,8 @@ U_C_OBJ = clock.o klibc.o process.o queue.o scheduler.o sio.o \
 	shell/halt.o shell/lspci.o shell/test.o shell/nettest.o pci/pci.o \
 	disk.o network/8255x.o network/net_handler.o
 
-U_S_SRC = klibs.S ulibs.S
-U_S_OBJ = klibs.o ulibs.o
+U_S_SRC = klibs.S ulibs.S shell/nettest_s.S
+U_S_OBJ = klibs.o ulibs.o shell/nettest_s.o
 
 U_LIBS	=
 
@@ -191,6 +191,7 @@ bootstrap.o: ./include/bootstrap.h
 startup.o: ./include/bootstrap.h
 isr_stubs.o: ./include/bootstrap.h
 ulibs.o: ./include/syscall.h ./include/common.h
+shell/nettest_s.o: ./include/common.h ./include/8255x.h
 c_io.o: ./include/c_io.h ./include/startup.h ./include/support.h
 c_io.o: ./include/x86arch.h
 support.o: ./include/startup.h ./include/support.h ./include/c_io.h
@@ -234,11 +235,12 @@ shell/reboot.o: ./include/common.h ./include/string.h ./include/shell.h
 shell/echo.o: ./include/common.h
 shell/halt.o: ./include/common.h ./include/string.h ./include/shell.h
 shell/lspci.o: ./include/common.h ./include/string.h ./include/pci.h
-shell/test.o: ./include/disk.h ./include/common.h
+shell/test.o: ./include/common.h
 shell/nettest.o: ./include/common.h ./include/startup.h ./include/8255x.h
 pci/pci.o: ./include/common.h ./include/pci.h ./include/startup.h
 disk.o: ./include/common.h ./include/disk.h ./include/pci.h
-network/8255x.o: ./include/common.h ./include/startup.h ./include/pci.h
-network/8255x.o: ./include/8255x.h ./include/net_handler.h
-network/net_handler.o: ./include/common.h ./include/startup.h ./include/pci.h
-network/net_handler.o: ./include/8255x.h ./include/net_handler.h
+network/8255x.o: ./include/common.h ./include/startup.h ./include/support.h
+network/8255x.o: ./include/pci.h ./include/8255x.h ./include/net_handler.h
+network/net_handler.o: ./include/common.h ./include/x86arch.h
+network/net_handler.o: ./include/startup.h ./include/pci.h ./include/8255x.h
+network/net_handler.o: ./include/net_handler.h

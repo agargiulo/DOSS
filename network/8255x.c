@@ -31,6 +31,7 @@ device_t *eth0;
 /*
  * PUBLIC GLOBAL VARIABLES
  */
+uint32_t CSR_BAR;
 
 /*
  * PRIVATE FUNCTIONS
@@ -51,22 +52,23 @@ void _net_init(void)
 			eth0 = &device_tab[i];
 		}
 	}
+
+	if (eth0 == NULL)
+	{
+		c_puts("\nError locating a network device\n");
+		return;
+	}
+
 	CSR_BAR = eth_pci_readl(P_ETH_CSR_IO_MAP_BAR);
 
-	__install_isr ( 0x2B, _net_handler );
-	uint8_t loadCUBaseCmd = 0x60;
-	uint8_t loadRUBaseCmd = 0x06;
-	__outb(CSR_BAR + E_CSR_SCB_GEN_PTR, 0x00000000);
-	__outb(CSR_BAR + E_CSR_SCB_COM_WORD, loadCUBaseCmd);
+	c_printf("\nCSR_BAR: 0x%08x\n", CSR_BAR);
 
-	uint8_t SCB_com_byte;
-	while ((SCB_com_byte = __inb(CSR_BAR + E_CSR_SCB_COM_WORD)) != 0x0)
-	{
-		c_printf("SCB command byte: 0x%02x\n", SCB_com_byte);
-		__delay(10);
-	}
-	__outb(CSR_BAR + E_CSR_SCB_COM_WORD, loadRUBaseCmd);
-	
+	uint8_t int_line = eth_pci_readb(P_ETH_INT_LINE);
+	int_line += 0x20;
+	c_printf("int_line: 0x%02x\n", int_line);
+	__install_isr(int_line, _net_handler);
+
+
 	c_puts(" network\n");
 }
 
@@ -135,4 +137,7 @@ void net_CSR_dump( void )
 	c_printf("Func Eve Mask Reg----0x%08x\n", __inl(CSR_BAR + E_CSR_FUNC_EV_MSK_REG));
 	c_printf("Func Pres State Reg--0x%08x\n", __inl(CSR_BAR + E_CSR_FUNC_PRE_STAT_REG));
 	c_printf("Force Event Reg------0x%08x\n", __inl(CSR_BAR + E_CSR_FORCE_EV_REG));
+	c_puts("---MORE---");
+	c_getchar();
+	c_putchar('\n');
 }

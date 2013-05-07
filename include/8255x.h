@@ -63,6 +63,7 @@
 #define E_CSR_FUNC_PRE_STAT_REG 0x38    /* 4 Bytes */
 #define E_CSR_FORCE_EV_REG      0x3C    /* 4 Bytes */
 
+
 #ifndef __SP2_ASM__
 
 /*
@@ -76,7 +77,7 @@
 /*
  * Globals
  */
-uint32_t CSR_BAR;
+extern uint32_t CSR_BAR;
 
 /*
  * Prototypes
@@ -88,6 +89,6 @@ uint8_t eth_pci_readb (uint8_t reg);
 uint16_t eth_pci_read (uint8_t reg);
 uint32_t eth_pci_readl (uint8_t reg);
 
-#endif
+#endif // __SP2_ASM__
 
 #endif

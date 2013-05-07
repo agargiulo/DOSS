@@ -238,11 +238,11 @@ void ( *__install_isr( int vector, void ( *handler )( int vector, int code ) ) )
 /*
 ** Name:	__delay
 */
-void __delay( int tenths ){
+void __delay( int micros ){
 	int	i;
 
-	while( --tenths >= 0 ){
-		for( i = 0; i < 10000000; i += 1 )
+	while( --micros >= 0 ){
+		for( i = 0; i < 4600; i += 1 )
 			;
 	}
 }
