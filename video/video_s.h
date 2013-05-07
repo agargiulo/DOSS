@@ -20,7 +20,8 @@
 */
 
 
-
+void _video_prot2real( void );
+void _video_real2prot( void );
 void _video_set_mode_13( void );
 void _video_plot_pixel_test( void );
 void _video_set_mode_text( void );

@@ -26,7 +26,7 @@ VPATH = . shell pci video
 U_H_SRC = include/clock.h include/common.h include/defs.h include/klib.h \
 	  include/process.h include/queue.h include/scheduler.h include/sio.h \
 	  include/stack.h include/syscall.h include/system.h include/types.h \
-	  include/ulib.h include/user.h include/pci.h video/video_s.h
+	  include/ulib.h include/user.h include/pci.h video/video_s.h video/video.h
 
 #
 # User compilation/assembly definable options
@@ -239,4 +239,4 @@ shell/lspci.o: ./include/common.h ./include/string.h ./include/pci.h
 pci/pci.o: ./include/common.h ./include/pci.h ./include/startup.h
 shell/test.o: ./include/disk.h ./include/common.h
 disk.o: ./include/common.h ./include/disk.h ./include/pci.h
-video/video.o: ./include/common.h ./include/video_s.h
+video/video.o: ./include/common.h ./include/video_s.h ./include/video.h
