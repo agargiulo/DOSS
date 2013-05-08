@@ -396,25 +396,15 @@ boot_sig:
 */
 
 switch:
-	/* Set VGA Mode 13 */
+	/* Set VGA Mode 13
 	xorl	%eax, %eax
 	mov	$0x13, %al
-	int	$0x10
+	int	$0x10 */
 
-	/* Plot pixel at location 80,80 */
-	xorl	%eax, %eax
-	xorl	%ecx, %ecx
-	xorl	%edx, %edx
-	mov	$0x0C, %ah
-	mov	$0x02, %al
-	mov	$80, %cx
-	mov	$80, %dx
-	int	$0x10
-
-	/* Set Text Mode
+	/* Set Text Mode */
 	xorl	%eax, %eax
 	mov	$0x03, %al
-	int	$0x10 */
+	int	$0x10
 
 	cli
 	movb	$0x80, %al	/* disable NMIs */

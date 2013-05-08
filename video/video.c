@@ -1,20 +1,27 @@
+#define __SP2_KERNEL__
 
 #include <common.h>
 #include <video_s.h>
 #include <video.h>
+#include <vga.h>
+#include <startup.h>
 
 void _video_test( void )
 {
-	//_video_point test
-	/*for(int y = 0; y < 100; y++)
-	{
-		for(int x = 0; x < 320; x++)
-		{
-			_video_point(x, y);
-		}
-	}*/
+	unsigned int i;
+	unsigned char *pixel = (unsigned char*) 0xa0000;
+
+	//Switch to Mode 0x13
+	__delay(10);
+	_video_setmode_13();
+
+	for(i = 0; i < 320*200; i++) pixel[i] = 0;
 
 	enum Color c;
+
+	//_video_point test
+	c = LIGHTBLUE;
+	_video_point(80, 80, c);
 
 	//_video_line test
 	point p1 = {20,20};
@@ -33,6 +40,13 @@ void _video_test( void )
 	point p6 = {300,150};
 	c = YELLOW;
 	_video_box_filled(&p5, &p6, c);
+
+	//Switch back to Text Mode
+	//__delay(10);
+	//for(i = 0; i < 320*200; i++) pixel[i] = 0;
+	__delay(10);
+	_video_setmode_text();
+
 }
 
 void _video_point(int x, int y, enum Color c)
