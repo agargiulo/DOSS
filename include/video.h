@@ -59,6 +59,7 @@ typedef struct point {int x,y;} point;
 ** Prototypes
 */
 
+int abs(int num);
 void _video_test( void );
 void _video_point(int x, int y, enum Color c);
 void _video_line(point *p1, point *p2, enum Color c);

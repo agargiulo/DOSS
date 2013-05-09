@@ -25,7 +25,7 @@ void _video_test( void )
 
 	//_video_line test
 	point p1 = {20,20};
-	point p2 = {20,120};
+	point p2 = {320,120};
 	c = LIGHTMAGENTA;
 	_video_line(&p1, &p2, c);
 
@@ -42,8 +42,8 @@ void _video_test( void )
 	_video_box_filled(&p5, &p6, c);
 
 	//Switch back to Text Mode
-	//__delay(10);
-	//for(i = 0; i < 320*200; i++) pixel[i] = 0;
+	__delay(10);
+	for(i = 0; i < 320*200; i++) pixel[i] = 0;
 	__delay(10);
 	_video_setmode_text();
 
@@ -56,54 +56,62 @@ void _video_point(int x, int y, enum Color c)
 	pixel[offset] = (int) c;
 }
 
+int abs(int num)
+{
+	if (num < 0) return num * -1;
+	else return num;
+}
+
+//Line algorithm courtesy Owen Royall-Kahin
 void _video_line(point *p1, point *p2, enum Color c)
 {
-	point top,bot;
-	double deltaX,x;
-	int i,ix;
+	int dE, dNE, x, y, d;
 
-	if( p2->y > p1->y )
+	int steep = abs(p2->y - p1->y) > abs(p2->x - p1->x) ? 1 : 0;
+	if (steep == 1)
 	{
-		top = *p1;
-		bot = *p2;
-	}
-	else
-	{
-		top = *p2;
-		bot = *p1;
+		int temp;
+
+		temp = p1->x;
+		p1->x = p1->y;
+		p1->y = temp;
+
+		temp = p2->x;
+		p2->x = p2->y;
+		p2->y = temp;
 	}
 
-	if( top.y == bot.y )
+	int dy = abs(p2->y - p1->y);
+	int dx = abs(p2->x - p1->x);
+
+	dE = 2 * dy;
+	dNE = 2 * (dy - dx);
+	d = dE - dx;
+
+	int xinc = p1->x < p2->x ? 1 : -1;
+	int yinc = p1->y < p2->y ? 1 : -1;
+
+	for(x = p1->x, y = p1->y; x != p2->x + xinc; x += xinc)
 	{
-		if( top.x < bot.x )
+		if (steep == 1)
 		{
-			for(i = top.x; i <= bot.x; i++)
-			{
-				_video_point(i, top.y, c);
-			}
+			_video_point(y, x, c);
 		}
 		else
 		{
-			for(i = bot.x; i <= top.x; i++)
-			{
-				_video_point(i, top.y, c);
-			}
+			_video_point(x, y, c);
 		}
-		
-		return;
+
+		if (d <= 0)
+		{
+			d += dE;
+		}
+		else
+		{
+			y += yinc;
+			d += dNE;
+		}
 	}
-
-	deltaX = (bot.x - top.x) / (bot.y - top.y);
-	x = top.x;
-
-	for(i = top.y; i <= bot.y; i++)
-	{
-		ix = x;
-		_video_point(ix, i, c);
-		x += deltaX;
-	}
-
-	return;
 }
 
 void _video_box(point *p1, point *p2, enum Color c)

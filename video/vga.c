@@ -1,3 +1,5 @@
+#define __SP2_KERNEL__
+
 #include <common.h>
 #include <vga.h>
 #include <startup.h>
