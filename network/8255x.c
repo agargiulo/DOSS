@@ -47,7 +47,7 @@ void _net_init(void)
 	// In this case, the 8255x (device id 0x1229)
 	for (int i = 0; i < device_count; i++)
 	{
-		if (device_tab[i].device == 0x1229 || device_tab[i].device == 0x1019)
+		if (device_tab[i].device == NET_DEVICE_ID)
 		{
 			eth0 = &device_tab[i];
 		}
@@ -59,7 +59,11 @@ void _net_init(void)
 		return;
 	}
 
-	CSR_BAR = eth_pci_readl(P_ETH_CSR_IO_MAP_BAR);
+	/*
+	 * Okay so here's the deal.
+	 * http://forum.osdev.org/viewtopic.php?f=1&t=26609
+	 */
+	CSR_BAR = eth_pci_readl(P_ETH_CSR_IO_MAP_BAR) & 0xFFFFFFFC;
 
 	c_printf("\nCSR_BAR: 0x%08x\n", CSR_BAR);
 

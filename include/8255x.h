@@ -14,7 +14,10 @@
 /*
  * General (C and/or assembly) definitions
  */
+#define NET_DEVICE_ID           0x1229  /* Intel Pro 100 82559c (rev 8) */
 
+/* http://forum.osdev.org/viewtopic.php?f=1&t=26609 */
+#define PCI_BAR_IOMAP_MASK      0xFFFFFFFC
 /*
  * PCI Configuration Space
  */

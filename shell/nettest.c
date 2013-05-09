@@ -49,20 +49,14 @@ void nic_wait( void )
 */
 void run_nettest(int argc, char **argv)
 {
-	// net_pci_dump();
-	// net_CSR_dump();
-	__outl(CSR_BAR + E_CSR_PORT, 0x00000000);
-
-	__delay(1000);
-
-	__outl(CSR_BAR + E_CSR_SCB_GEN_PTR, 0x00000000);
-	net_CSR_dump();
 	int port = CSR_BAR + E_CSR_SCB_COM_WORD;
-	__outb(port, 0x60);
-	__delay(1000);
+	__outl(CSR_BAR + E_CSR_PORT, 0x00000000);
+	__delay(100);
+	__outl(CSR_BAR + E_CSR_SCB_GEN_PTR, 0x00000000);
+	__outb(port + 1, 0x2);
+	/*
+	nic_wait();
 	__outb(port, 0x06);
-
-	//nic_wait();
-
-	 // __outb(CSR_BAR + E_CSR_SCB_COM_WORD, 0x06);
+	nic_wait();
+	*/
 }

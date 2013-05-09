@@ -27,7 +27,6 @@
 /*
 ** PRIVATE GLOBAL VARIABLES
 */
-uint32_t tick = 0;
 /*
 ** PUBLIC GLOBAL VARIABLES
 */
@@ -45,7 +44,7 @@ void _net_handler(int vector, int code)
 	// c_printf("\nVector=0x%02x, code=%d\n", vector, code );
 	uint16_t SCB_STAT_ACK  = __inb(CSR_BAR + E_CSR_SCB_STAT_ACK);
 	uint16_t SCB_STAT_Byte = __inb(CSR_BAR + E_CSR_SCB_STAT_WORD);
-	c_printf_at(0,0,"SCB_STATUS: 0x%02x%02x", SCB_STAT_ACK, SCB_STAT_Byte);
+	c_printf("SCB_STATUS: 0x%02x%02x\n", SCB_STAT_ACK, SCB_STAT_Byte);
 
 	if ((SCB_STAT_ACK & 0x80) != 0)
 	{
@@ -82,13 +81,10 @@ void _net_handler(int vector, int code)
 
 	SCB_STAT_ACK  = __inb(CSR_BAR + E_CSR_SCB_STAT_ACK);
 	SCB_STAT_Byte = __inb(CSR_BAR + E_CSR_SCB_STAT_WORD);
-	c_printf_at(0,5, "SCB_STATUS: 0x%02x%02x", SCB_STAT_ACK, SCB_STAT_Byte);
-	c_printf_at(35, 10, "#int: %-d", tick++);
+	c_printf("SCB_STATUS: 0x%02x%02x\n", SCB_STAT_ACK, SCB_STAT_Byte);
 	
 
 	 __outb( PIC_MASTER_CMD_PORT, PIC_EOI );
-	// Not too sure why I need to not have this.
-	
 	if( vector >= 0x28 && vector <= 0x2f )
 	{
 		__outb( PIC_SLAVE_CMD_PORT, PIC_EOI );
