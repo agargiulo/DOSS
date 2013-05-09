@@ -21,7 +21,7 @@
 
 // clock interrupts per second
 
-#define	CLOCK_FREQUENCY		100
+#define	CLOCK_FREQUENCY		1000
 
 // standard process quantum (in ticks)
 

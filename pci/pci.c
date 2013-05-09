@@ -16,11 +16,21 @@ void _pci_init( void )
 	ushort_t bus;
 	ushort_t slot;
 	ushort_t func;
-
 	ushort_t vendor;
-	ushort_t device;
-	ubyte_t class;
-	ubyte_t subclass;
+	
+	ulong_t cbcisptr;
+	
+	ushort_t subsysvid;
+	ushort_t subsysid;
+	
+	ulong_t eprombar;
+	
+	ubyte_t capptr;
+	
+	ubyte_t intline;
+	ubyte_t intpin;
+	ubyte_t mingrant;
+	ubyte_t maxlat;
 
 	c_puts(" pci");
 	
@@ -35,12 +45,54 @@ void _pci_init( void )
 				vendor = pci_read(bus, slot, func, REG_VENDOR);
 				if(vendor != INVALID)
 				{
-					device = pci_read(bus, slot, func, REG_DEVICE);
-					class = pci_readb(bus, slot, func, REG_CLASS);
-					subclass = pci_readb(bus, slot, func, REG_SUBCLASS);
+					device_t *d = &device_tab[device_count++];
+					d->bus = bus;
+					d->slot = slot;
+					d->vendor = vendor;
+					d->device = pci_read(bus, slot, func, REG_DEVICE);
 					
-					device_t d = { bus, slot, func, vendor, device, class, subclass };
-					device_tab[device_count++] = d;
+					
+					
+					d->command = pci_read(bus, slot, func, REG_COMMAND);
+					d->status = pci_read(bus, slot, func, REG_STATUS);
+					
+					d->revid = pci_readb(bus, slot, func, REG_REVID);
+					d->progif = pci_readb(bus, slot, func, REG_PROGIF);
+					d->class = pci_readb(bus, slot, func, REG_CLASS);
+					d->subclass = pci_readb(bus, slot, func, REG_SUBCLASS);
+					
+					d->clsize = pci_readb(bus, slot, func, REG_CLSIZE);
+					d->lattimer = pci_readb(bus, slot, func, REG_LTIMER);
+					d->htype = pci_readb(bus, slot, func, REG_HTYPE);
+					d->bist = pci_readb(bus, slot, func, REG_BIST);
+					
+					switch ( d->htype ) {
+						case 0:
+			d->bar0 = pci_readl(bus, slot, func, REG0_BAR0);
+			d->bar1 = pci_readl(bus, slot, func, REG0_BAR1);
+			d->bar2 = pci_readl(bus, slot, func, REG0_BAR2);
+			d->bar3 = pci_readl(bus, slot, func, REG0_BAR3);
+			d->bar4 = pci_readl(bus, slot, func, REG0_BAR4);
+			d->bar5 = pci_readl(bus, slot, func, REG0_BAR5);
+			
+			d->cbcisptr = pci_readl(bus, slot, func, REG0_CBCISPTR);
+			
+			d->subsysvid = pci_read(bus, slot, func, REG0_SUBVENID);
+			d->subsysid = pci_read(bus, slot, func, REG0_SUBID);
+			
+			d->eprombar = pci_readl(bus, slot, func, REG0_EROMBAR);
+			
+			d->capptr = pci_readb(bus, slot, func, REG0_CAPPTR);
+			
+			d->intline = pci_readb(bus, slot, func, REG0_INTLINE);
+			d->intpin = pci_readb(bus, slot, func, REG0_INTPIN);
+			d->mingrant = pci_readb(bus, slot, func, REG0_MINGRANT);
+			d->maxlat = pci_readb(bus, slot, func, REG0_MAXLAT);
+							break;
+					}
+						
+					
+					
 					
 				}
 			}
