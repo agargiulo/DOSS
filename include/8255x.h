@@ -48,6 +48,7 @@
  * Control / Status Register Offsets
  */
 #define E_CSR_SCB_STAT_WORD     0x00    /* 2 Bytes */
+#define E_CSR_SCB_STAT_ACK      0x01    /* 1 Byte  */
 #define E_CSR_SCB_COM_WORD      0x02    /* 2 Bytes */
 #define E_CSR_SCB_GEN_PTR       0x04    /* 4 Bytes */
 #define E_CSR_PORT              0x08    /* 4 Bytes */
@@ -55,9 +56,9 @@
 #define E_CSR_MDI_CON_REG       0x10    /* 4 Bytes */
 #define E_CSR_RX_DMA_BYTES      0x14    /* 4 Bytes */
 #define E_CSR_FLO_CON_REG       0x1A    /* 2 Bytes */
-#define E_CSR_PMDR              0x1B    /* 1 Bytes */
-#define E_CSR_GEN_CON           0x1C    /* 1 Bytes */
-#define E_CSR_GEN_STAT          0x1D    /* 1 Bytes */
+#define E_CSR_PMDR              0x1B    /* 1 Byte  */
+#define E_CSR_GEN_CON           0x1C    /* 1 Byte  */
+#define E_CSR_GEN_STAT          0x1D    /* 1 Byte  */
 #define E_CSR_FUNC_EV_REG       0x30    /* 4 Bytes */
 #define E_CSR_FUNC_EV_MSK_REG   0x34    /* 4 Bytes */
 #define E_CSR_FUNC_PRE_STAT_REG 0x38    /* 4 Bytes */

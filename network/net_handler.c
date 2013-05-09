@@ -42,15 +42,55 @@
 
 void _net_handler(int vector, int code)
 {
-	c_printf( "\nVector=0x%02x, code=%d\n", vector, code );
-	uint8_t SCB_STAT_Byte = __inb(CSR_BAR + E_CSR_SCB_STAT_WORD + 1);
-	c_printf("SCB_STATUS: 0x%02x%02x\n", SCB_STAT_Byte, __inb(CSR_BAR + E_CSR_SCB_STAT_WORD));
-	__outb(CSR_BAR + E_CSR_SCB_STAT_WORD + 1, 0xFF);
-	c_printf("SCB_STATUS: 0x%02x%02x\n", SCB_STAT_Byte, __inb(CSR_BAR + E_CSR_SCB_STAT_WORD));
+	// c_printf("\nVector=0x%02x, code=%d\n", vector, code );
+	uint16_t SCB_STAT_ACK  = __inb(CSR_BAR + E_CSR_SCB_STAT_ACK);
+	uint16_t SCB_STAT_Byte = __inb(CSR_BAR + E_CSR_SCB_STAT_WORD);
+	c_printf("SCB_STATUS: 0x%02x%02x\n", SCB_STAT_ACK, SCB_STAT_Byte);
+
+	if ((SCB_STAT_ACK & 0x80) != 0)
+	{
+		__outb(CSR_BAR + E_CSR_SCB_STAT_ACK, 0X08);
+	}
+	if ((SCB_STAT_ACK & 0x40) != 0)
+	{
+		__outb(CSR_BAR + E_CSR_SCB_STAT_ACK, 0x40);
+	}
+	if ((SCB_STAT_ACK & 0x20) != 0)
+	{
+		__outb(CSR_BAR + E_CSR_SCB_STAT_ACK, 0x20);
+	}
+	if ((SCB_STAT_ACK & 0x10) != 0)
+	{
+		__outb(CSR_BAR + E_CSR_SCB_STAT_ACK, 0x10);
+	}
+	if ((SCB_STAT_ACK & 0x08) != 0)
+	{
+		__outb(CSR_BAR + E_CSR_SCB_STAT_ACK, 0x08);
+	}
+	if ((SCB_STAT_ACK & 0X04) != 0)
+	{
+		__outb(CSR_BAR + E_CSR_SCB_STAT_ACK, 0X04);
+	}
+	if ((SCB_STAT_ACK & 0X02) != 0)
+	{
+		__outb(CSR_BAR + E_CSR_SCB_STAT_ACK, 0X02);
+	}
+	if ((SCB_STAT_ACK & 0X01) != 0)
+	{
+		__outb(CSR_BAR + E_CSR_SCB_STAT_ACK, 0X01);
+	}
+
+	SCB_STAT_ACK  = __inb(CSR_BAR + E_CSR_SCB_STAT_ACK);
+	SCB_STAT_Byte = __inb(CSR_BAR + E_CSR_SCB_STAT_WORD);
+	c_printf("SCB_STATUS: 0x%02x%02x\n", SCB_STAT_ACK, SCB_STAT_Byte);
+	
 
 	__outb( PIC_MASTER_CMD_PORT, PIC_EOI );
+	// Not too sure why I need to not have this.
+	/*
 	if( vector >= 0x28 && vector <= 0x2f )
 	{
 		__outb( PIC_SLAVE_CMD_PORT, PIC_EOI );
 	}
+	*/
 }

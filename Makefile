@@ -19,8 +19,8 @@ U_C_OBJ = clock.o klibc.o process.o queue.o scheduler.o sio.o \
 	shell/halt.o shell/lspci.o shell/test.o shell/nettest.o pci/pci.o \
 	disk.o network/8255x.o network/net_handler.o
 
-U_S_SRC = klibs.S ulibs.S shell/nettest_s.S
-U_S_OBJ = klibs.o ulibs.o shell/nettest_s.o
+U_S_SRC = klibs.S ulibs.S #shell/nettest_s.S
+U_S_OBJ = klibs.o ulibs.o #shell/nettest_s.o
 
 U_LIBS	=
 
