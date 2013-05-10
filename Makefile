@@ -53,7 +53,7 @@ CPP = cpp
 CPPFLAGS = $(USER_OPTIONS) -nostdinc $(INCLUDES)
 
 CC = gcc
-CFLAGS = -std=c99 -fno-stack-protector -fno-builtin -Wall -Wstrict-prototypes $(CPPFLAGS) -save-temps -Wextra -Wno-unused-parameter
+CFLAGS = -std=c99 -fno-stack-protector -fno-builtin -Wall -Wstrict-prototypes $(CPPFLAGS) -Wextra
 
 AS = as
 ASFLAGS =
@@ -191,7 +191,6 @@ bootstrap.o: ./include/bootstrap.h
 startup.o: ./include/bootstrap.h
 isr_stubs.o: ./include/bootstrap.h
 ulibs.o: ./include/syscall.h ./include/common.h
-shell/nettest_s.o: ./include/common.h ./include/8255x.h
 c_io.o: ./include/c_io.h ./include/startup.h ./include/support.h
 c_io.o: ./include/x86arch.h
 support.o: ./include/startup.h ./include/support.h ./include/c_io.h

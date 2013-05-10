@@ -242,7 +242,7 @@ void __delay( int micros ){
 	int	i;
 
 	while( --micros >= 0 ){
-		for( i = 0; i < 4600; i += 1 )
+		for( i = 0; i < 480; i += 1 )
 			;
 	}
 }

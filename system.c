@@ -441,7 +441,7 @@ void _init( void ) {
 	__init_interrupts();	// IDT and PIC initialization
 	// Ignore the 0x2A interrupt which happens when removing or inserting a
 	// flash drive.
-	// __install_isr( 0x2A,  _ignore_isr );
+	__install_isr( 0x2A,  _ignore_isr );
 
 	/*
 	** Console I/O system.
