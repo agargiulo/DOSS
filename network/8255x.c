@@ -63,15 +63,25 @@ void _net_init(void)
 	 * Okay so here's the deal.
 	 * http://forum.osdev.org/viewtopic.php?f=1&t=26609
 	 */
-	CSR_BAR = eth_pci_readl(P_ETH_CSR_IO_MAP_BAR) & 0xFFFFFFFC;
-
-	c_printf("\nCSR_BAR: 0x%08x\n", CSR_BAR);
+	CSR_BAR = eth_pci_readl(P_ETH_CSR_IO_MAP_BAR) & PCI_BAR_IOMAP_MASK;
 
 	uint8_t int_line = eth_pci_readb(P_ETH_INT_LINE);
 	int_line += 0x20;
-	c_printf("int_line: 0x%02x\n", int_line);
 	__install_isr(int_line, _net_handler);
 
+	// PORT reset
+	__outl(CSR_BAR + E_CSR_PORT, 0);
+	__delay(100);
+	__outl(CSR_BAR + E_CSR_SCB_GEN_PTR, 0);
+	__outb(CSR_BAR + E_CSR_SCB_COM_WORD , SCB_CCMD_LOAD_CU_BASE);
+	__outb(CSR_BAR + E_CSR_SCB_COM_WORD , SCB_RCMD_LOAD_RU_BASE);
+
+	e100_cmd_dump_t dump;
+	dump.header.stat = 0x0000;
+	// A060 = Last command + throw interrupt + dump command
+	dump.header.cmd = 0xA060;
+	dump.header.link_offset = 0x00000000;
+	dump.buff_addr = (uint32_t)dump.buffer;
 
 	c_puts(" network\n");
 }

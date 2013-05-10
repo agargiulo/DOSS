@@ -67,6 +67,34 @@
 #define E_CSR_FUNC_PRE_STAT_REG 0x38    /* 4 Bytes */
 #define E_CSR_FORCE_EV_REG      0x3C    /* 4 Bytes */
 
+/*
+ * Control Unit Commands
+ */
+#define SCB_CCMD_NOP             0x00
+#define SCB_CCMD_CU_START        0x10
+#define SCB_CCMD_CU_RESUME       0X20
+// Load Dump Counters Address
+#define SCB_CCMD_LDCA            0x40
+// Dump Statistical Counters
+#define SCB_CCMD_DSC             0x50
+#define SCB_CCMD_LOAD_CU_BASE    0x60
+// Dump and Reset Statistical Counters
+#define SCB_CCMD_DRSC            0x70
+#define SCB_CCMD_CU_S_RESUME     0xA0
+
+/*
+ * Receive Unit Commands
+ */
+#define SCB_RCMD_NOP             0x00
+#define SCB_RCMD_RU_START        0x01
+#define SCB_RCMD_RU_RESUME       0x02
+// Receive DMA Redirect
+#define SCB_RCMD_RECV_DMA_REDIR  0x03
+#define SCB_RCMD_RU_ABORT        0x04
+// Load Header Data Size (HDS)
+#define SCB_RCMD_LOAD_HDS        0x05
+#define SCB_RCMD_LOAD_RU_BASE    0x06
+
 
 #ifndef __SP2_ASM__
 
@@ -77,6 +105,20 @@
 /*
  * Types
  */
+
+typedef struct e100_cmd_header
+{
+	uint16_t stat;
+	uint16_t cmd;
+	uint32_t link_offset;
+} e100_cmd_header_t;
+
+typedef struct e100_cmd_dump
+{
+	e100_cmd_header_t header;
+	uint32_t buff_addr;
+	uint8_t buffer[596];
+} e100_cmd_dump_t;
 
 /*
  * Globals
