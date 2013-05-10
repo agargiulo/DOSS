@@ -131,6 +131,7 @@ extern uint32_t CSR_BAR;
 void _net_init(void);
 void net_pci_dump(void);
 void net_CSR_dump(void);
+void nic_wait(void);
 uint8_t eth_pci_readb (uint8_t reg);
 uint16_t eth_pci_read (uint8_t reg);
 uint32_t eth_pci_readl (uint8_t reg);

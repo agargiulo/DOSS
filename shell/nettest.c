@@ -29,18 +29,6 @@
 /*
 ** PRIVATE FUNCTIONS
 */
-void nic_wait( void )
-{
-	uint16_t timeout = 10;
-	uint8_t i = 0;
-	while (__inb(CSR_BAR + E_CSR_SCB_COM_WORD)  && --timeout)
-	{
-		c_printf("i: %d\n", i);
-		i = (i + 1) % 100;
-		__delay(2);
-	}
-}
-
 /*
 ** PUBLIC FUNCTIONS
 */

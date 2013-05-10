@@ -83,7 +83,22 @@ void _net_init(void)
 	dump.header.link_offset = 0x00000000;
 	dump.buff_addr = (uint32_t)dump.buffer;
 
+	__outl(CSR_BAR + E_CSR_SCB_GEN_PTR, (uint32_t) &dump);
+	__outb(CSR_BAR + E_CSR_SCB_COM_WORD, SCB_CCMD_CU_START);
+	nic_wait();
+
 	c_puts(" network\n");
+}
+
+void nic_wait( void )
+{
+	uint8_t i = 0;
+	while (__inb(CSR_BAR + E_CSR_SCB_COM_WORD))
+	{
+		c_printf("i: %d\n", i);
+		i = (i + 1) % 100;
+		__delay(2);
+	}
 }
 
 uint8_t eth_pci_readb (uint8_t reg)

@@ -48,7 +48,7 @@ void _net_handler(int vector, int code)
 
 	if ((SCB_STAT_ACK & 0x80) != 0)
 	{
-		__outb(CSR_BAR + E_CSR_SCB_STAT_ACK, 0X08);
+		__outb(CSR_BAR + E_CSR_SCB_STAT_ACK, 0X80);
 	}
 	if ((SCB_STAT_ACK & 0x40) != 0)
 	{
