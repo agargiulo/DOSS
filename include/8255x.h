@@ -70,30 +70,55 @@
 /*
  * Control Unit Commands
  */
-#define SCB_CCMD_NOP             0x00
-#define SCB_CCMD_CU_START        0x10
-#define SCB_CCMD_CU_RESUME       0X20
+#define SCB_CCMD_NOP            0x00
+#define SCB_CCMD_CU_START       0x10
+#define SCB_CCMD_CU_RESUME      0X20
 // Load Dump Counters Address
-#define SCB_CCMD_LDCA            0x40
+#define SCB_CCMD_LDCA           0x40
 // Dump Statistical Counters
-#define SCB_CCMD_DSC             0x50
-#define SCB_CCMD_LOAD_CU_BASE    0x60
-// Dump and Reset Statistical Counters
-#define SCB_CCMD_DRSC            0x70
-#define SCB_CCMD_CU_S_RESUME     0xA0
+#define SCB_CCMD_DSC            0x50
+#define SCB_CCMD_LOAD_CU_BASE   0x60
+// Dump and Reset Statistical Conters
+#define SCB_CCMD_DRSC           0x70
+#define SCB_CCMD_CU_S_RESUME    0xA0
 
 /*
  * Receive Unit Commands
  */
-#define SCB_RCMD_NOP             0x00
-#define SCB_RCMD_RU_START        0x01
-#define SCB_RCMD_RU_RESUME       0x02
+#define SCB_RCMD_NOP            0x00
+#define SCB_RCMD_RU_START       0x01
+#define SCB_RCMD_RU_RESUME      0x02
 // Receive DMA Redirect
-#define SCB_RCMD_RECV_DMA_REDIR  0x03
-#define SCB_RCMD_RU_ABORT        0x04
+#define SCB_RCMD_RECV_DMA_REDIR 0x03
+#define SCB_RCMD_RU_ABORT       0x04
 // Load Header Data Size (HDS)
-#define SCB_RCMD_LOAD_HDS        0x05
-#define SCB_RCMD_LOAD_RU_BASE    0x06
+#define SCB_RCMD_LOAD_HDS       0x05
+#define SCB_RCMD_LOAD_RU_BASE   0x06
+
+
+/*
+ * STAT/ACK Defines
+ */
+#define SCB_STAT_CX             0x80
+#define SCB_STAT_FR             0x40
+#define SCB_STAT_CNA            0x20
+#define SCB_STAT_RNR            0x10
+#define SCB_STAT_MDI            0x08
+#define SCB_STAT_SWI            0x04
+// 0x02 is reserved
+#define SCB_STAT_FCP            0x01
+/*
+ * CUS/RUS Values
+ */
+#define SCB_CUS_IDLE            0x00
+#define SCB_CUS_SUSP            0x40
+#define SCB_CUS_LPQ_ACT         0x80
+#define SCB_CUS_HQP_ACT         0xC0
+
+#define SCB_RUS_IDLE            0x00
+#define SCB_RUS_SUSP            0x04
+#define SCB_RUS_NO_RES          0x08
+#define SCB_RUS_READY           0x10
 
 
 #ifndef __SP2_ASM__
