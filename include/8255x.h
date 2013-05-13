@@ -10,6 +10,7 @@
 #define _8255X_H_
 
 #include <common.h>
+#include <pci.h>
 
 /*
  * General (C and/or assembly) definitions
@@ -131,7 +132,7 @@
  * Types
  */
 #define MAC_ADDR_LEN            6       /* 6 bytes in a MAC Address */
-typedef uint8_t[MAC_ADDR_LEN] mac_addr_t;
+typedef uint8_t mac_addr_t[MAC_ADDR_LEN];
 
 typedef struct e100_cmd_header
 {
