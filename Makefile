@@ -10,17 +10,17 @@
 U_C_SRC = clock.c klibc.c process.c queue.c scheduler.c sio.c \
 	stack.c syscall.c system.c ulibc.c user.c string.c shell/shell.c \
 	shell/ps.c shell/clear.c shell/help.c shell/reboot.c shell/echo.c \
-	shell/halt.c shell/lspci.c shell/test.c shell/nettest.c pci/pci.c \
+	shell/halt.c shell/lspci.c shell/test.c shell/hosts.c pci/pci.c \
 	disk.c network/8255x.c network/net_handler.c
 
 U_C_OBJ = clock.o klibc.o process.o queue.o scheduler.o sio.o \
 	stack.o syscall.o system.o ulibc.o user.o string.o shell/shell.o\
 	shell/ps.o shell/clear.o shell/help.o shell/reboot.o shell/echo.o\
-	shell/halt.o shell/lspci.o shell/test.o shell/nettest.o pci/pci.o \
+	shell/halt.o shell/lspci.o shell/test.o shell/hosts.o pci/pci.o \
 	disk.o network/8255x.o network/net_handler.o
 
-U_S_SRC = klibs.S ulibs.S #shell/nettest_s.S
-U_S_OBJ = klibs.o ulibs.o #shell/nettest_s.o
+U_S_SRC = klibs.S ulibs.S
+U_S_OBJ = klibs.o ulibs.o
 
 U_LIBS	=
 
@@ -234,8 +234,8 @@ shell/reboot.o: ./include/common.h ./include/string.h ./include/shell.h
 shell/echo.o: ./include/common.h
 shell/halt.o: ./include/common.h ./include/string.h ./include/shell.h
 shell/lspci.o: ./include/common.h ./include/string.h ./include/pci.h
-shell/test.o: ./include/common.h
-shell/nettest.o: ./include/common.h ./include/startup.h ./include/8255x.h
+shell/test.o: ./include/disk.h ./include/common.h
+shell/hosts.o: ./include/common.h ./include/8255x.h ./include/string.h
 pci/pci.o: ./include/common.h ./include/pci.h ./include/startup.h
 disk.o: ./include/common.h ./include/disk.h ./include/pci.h
 network/8255x.o: ./include/common.h ./include/startup.h ./include/support.h
