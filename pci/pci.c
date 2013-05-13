@@ -18,19 +18,6 @@ void _pci_init( void )
 	ushort_t func;
 	ushort_t vendor;
 	
-	ulong_t cbcisptr;
-	
-	ushort_t subsysvid;
-	ushort_t subsysid;
-	
-	ulong_t eprombar;
-	
-	ubyte_t capptr;
-	
-	ubyte_t intline;
-	ubyte_t intpin;
-	ubyte_t mingrant;
-	ubyte_t maxlat;
 
 	c_puts(" pci");
 	

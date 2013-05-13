@@ -13,7 +13,7 @@ void run_test(int argc, char **argv) {
 			print_devices();
 			break;
 		case 1:
-			disk_write( 0, argv[2], strlen(argv[2]) );
+			disk_write( 0, (uint8_t*)(argv[2]), strlen(argv[2]) );
 			break;
 		case 2:
 			disk_read( 0, buff, 512 );
