@@ -121,6 +121,26 @@
 #define SCB_RUS_NO_RES          0x08
 #define SCB_RUS_READY           0x10
 
+/*
+ * Action Command defines
+ */
+#define ACT_CMD_EL              0x8000
+#define ACT_CMD_S               0x4000
+#define ACT_CMD_I               0x2000
+#define ACT_CMD_NOP             0x0000
+// IA = Individual Address
+#define ACT_CMD_IA_SETUP        0x0001
+#define ACT_CMD_CONF            0x0002
+// MA = Multicast Address
+#define ACT_CMD_MA_SETUP        0x0003
+#define ACT_CMD_TRANS           0x0004
+#define ACT_CMD_LOAD_MCODE      0x0005
+#define ACT_CMD_DUMP            0x0006
+#define ACT_CMD_DIAGNOSE        0x0007
+
+#define ACT_CMD_STAT_C          0x8000
+#define ACT_CMD_STAT_OK         0x2000
+
 
 #ifndef __SP2_ASM__
 

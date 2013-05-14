@@ -41,48 +41,45 @@
 
 void _net_handler(int vector, int code)
 {
-	// c_printf("\nVector=0x%02x, code=%d\n", vector, code );
-	uint16_t SCB_STAT_ACK  = __inb(eth0.CSR_BAR + E_CSR_SCB_STAT_ACK);
+	uint16_t SCB_STAT_ACK_Byte  = __inb(eth0.CSR_BAR + E_CSR_SCB_STAT_ACK);
 	uint16_t SCB_STAT_Byte = __inb(eth0.CSR_BAR + E_CSR_SCB_STAT_WORD);
-	c_printf("SCB_STATUS: 0x%02x%02x\n", SCB_STAT_ACK, SCB_STAT_Byte);
+	c_printf("SCB_STATUS: 0x%02x%02x\n", SCB_STAT_ACK_Byte, SCB_STAT_Byte);
 
-	if ((SCB_STAT_ACK & 0x80) != 0)
+	if ((SCB_STAT_ACK_Byte & SCB_STAT_CX) != 0)
 	{
-		__outb(eth0.CSR_BAR + E_CSR_SCB_STAT_ACK, 0X80);
+		eth0.CU_finished = 1;
+		c_printf("CU Command complete (%d)\n", eth0.CU_finished);
+		__outb(eth0.CSR_BAR + E_CSR_SCB_STAT_ACK, SCB_STAT_CX);
 	}
-	if ((SCB_STAT_ACK & 0x40) != 0)
+	if ((SCB_STAT_ACK_Byte & SCB_STAT_FR) != 0)
 	{
-		__outb(eth0.CSR_BAR + E_CSR_SCB_STAT_ACK, 0x40);
+		c_puts("Frame recieved\n");
+		__outb(eth0.CSR_BAR + E_CSR_SCB_STAT_ACK, SCB_STAT_FR);
 	}
-	if ((SCB_STAT_ACK & 0x20) != 0)
+	if ((SCB_STAT_ACK_Byte & SCB_STAT_CNA) != 0)
 	{
-		__outb(eth0.CSR_BAR + E_CSR_SCB_STAT_ACK, 0x20);
+		__outb(eth0.CSR_BAR + E_CSR_SCB_STAT_ACK, SCB_STAT_CNA);
 	}
-	if ((SCB_STAT_ACK & 0x10) != 0)
+	if ((SCB_STAT_ACK_Byte & SCB_STAT_RNR) != 0)
 	{
-		__outb(eth0.CSR_BAR + E_CSR_SCB_STAT_ACK, 0x10);
+		__outb(eth0.CSR_BAR + E_CSR_SCB_STAT_ACK, SCB_STAT_RNR);
 	}
-	if ((SCB_STAT_ACK & 0x08) != 0)
+	if ((SCB_STAT_ACK_Byte & SCB_STAT_MDI) != 0)
 	{
-		__outb(eth0.CSR_BAR + E_CSR_SCB_STAT_ACK, 0x08);
+		__outb(eth0.CSR_BAR + E_CSR_SCB_STAT_ACK, SCB_STAT_MDI);
 	}
-	if ((SCB_STAT_ACK & 0X04) != 0)
+	if ((SCB_STAT_ACK_Byte & SCB_STAT_SWI) != 0)
 	{
-		__outb(eth0.CSR_BAR + E_CSR_SCB_STAT_ACK, 0X04);
+		__outb(eth0.CSR_BAR + E_CSR_SCB_STAT_ACK, SCB_STAT_SWI);
 	}
-	if ((SCB_STAT_ACK & 0X02) != 0)
+	if ((SCB_STAT_ACK_Byte & SCB_STAT_FCP) != 0)
 	{
-		__outb(eth0.CSR_BAR + E_CSR_SCB_STAT_ACK, 0X02);
-	}
-	if ((SCB_STAT_ACK & 0X01) != 0)
-	{
-		__outb(eth0.CSR_BAR + E_CSR_SCB_STAT_ACK, 0X01);
+		__outb(eth0.CSR_BAR + E_CSR_SCB_STAT_ACK, SCB_STAT_FCP);
 	}
 
-	SCB_STAT_ACK  = __inb(eth0.CSR_BAR + E_CSR_SCB_STAT_ACK);
+	SCB_STAT_ACK_Byte  = __inb(eth0.CSR_BAR + E_CSR_SCB_STAT_ACK);
 	SCB_STAT_Byte = __inb(eth0.CSR_BAR + E_CSR_SCB_STAT_WORD);
-	c_printf("SCB_STATUS: 0x%02x%02x\n", SCB_STAT_ACK, SCB_STAT_Byte);
-	
+	c_printf("SCB_STATUS: 0x%02x%02x\n", SCB_STAT_ACK_Byte, SCB_STAT_Byte);
 
 	 __outb( PIC_MASTER_CMD_PORT, PIC_EOI );
 	if( vector >= 0x28 && vector <= 0x2f )

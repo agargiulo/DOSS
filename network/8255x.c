@@ -82,8 +82,7 @@ void _net_init(void)
 
 	e100_cmd_dump_t dump;
 	dump.header.stat = 0x0000;
-	// A060 = Last command + throw interrupt + dump command
-	dump.header.cmd = 0xA060;
+	dump.header.cmd = ACT_CMD_EL | ACT_CMD_I | ACT_CMD_DUMP;
 	dump.header.link_offset = 0x00000000;
 	dump.buff_addr = (uint32_t)dump.buffer;
 
