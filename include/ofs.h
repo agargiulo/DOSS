@@ -14,15 +14,6 @@
 #include <common.h>
 
 /*
-** General (C and/or assembly) definitions
-*/
-
-
-/*
-** Start of C-only definitions
-*/
-
-/*
 ** Types
 */
 
@@ -32,22 +23,20 @@ typedef struct file {
 } file_t;
 
 /*
-** Globals
-*/
-
-
-
-/*
 ** Prototypes
 */
 
 void _fs_init( void );
 
-file_t fopen( char * name );
+file_t * fopen( char * name );
 
 int fclose( file_t * file );
 
 int fseek( file_t * file, uint32_t offset );
+
+size_t fread( void * buffer, size_t size, size_t count, file_t * file );
+
+size_t fwrite( const void * buffer, size_t size, size_t count, file_t * file );
 
 
 #endif
