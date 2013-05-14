@@ -29,6 +29,7 @@
 /*
  * PUBLIC GLOBAL VARIABLES
  */
+e100_device_t eth0;
 
 /*
  * PRIVATE FUNCTIONS
@@ -86,9 +87,44 @@ void _net_init(void)
 	dump.header.link_offset = 0x00000000;
 	dump.buff_addr = (uint32_t)dump.buffer;
 
+	eth0.CU_finished = 0;
 	__outl(eth0.CSR_BAR + E_CSR_SCB_GEN_PTR, (uint32_t) &dump);
 	__outb(eth0.CSR_BAR + E_CSR_SCB_COM_WORD, SCB_CCMD_CU_START);
 	nic_wait();
+
+	int count = 0;
+	while (eth0.CU_finished != 1)
+	{
+		c_printf("Checked %d times so far\n", count++);
+		c_puts("CU not done yet, delaying for 500 ms\n");
+		__delay(5000);
+	}
+
+	if ((dump.header.stat & ACT_CMD_STAT_C) != 0)
+	{
+		if ((dump.header.stat & ACT_CMD_STAT_OK) != 0)
+		{
+			for (int i = 0; i < MAC_ADDR_LEN; i++)
+			{
+				eth0.hw_addr[i] = dump.buffer[39+i];
+			}
+		}
+		else
+		{
+			c_puts("Error: dump command did not succeed\n");
+		}
+	}
+	else
+	{
+		c_puts("Error: dump command did not finish\n");
+	}
+	
+	c_puts("Hardware address is: ");
+	for (int i = 0; i < MAC_ADDR_LEN - 1; i++)
+	{
+		c_printf("%02x:", eth0.hw_addr[i]);
+	}
+	c_printf("%02x\n", eth0.hw_addr[MAC_ADDR_LEN - 1]);
 
 	c_puts(" network\n");
 }

@@ -194,7 +194,7 @@ typedef struct e100_device
 /*
  * Globals
  */
-e100_device_t eth0;
+extern e100_device_t eth0;
 
 /*
  * Prototypes
