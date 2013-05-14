@@ -132,6 +132,7 @@
  * Types
  */
 #define MAC_ADDR_LEN            6       /* 6 bytes in a MAC Address */
+
 typedef uint8_t mac_addr_t[MAC_ADDR_LEN];
 
 typedef struct e100_cmd_header
@@ -159,7 +160,7 @@ typedef struct e100_device
 /*
  * Globals
  */
-extern uint32_t CSR_BAR;
+e100_device_t eth0;
 
 /*
  * Prototypes
