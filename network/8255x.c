@@ -66,12 +66,19 @@ void _net_init(void)
 	int_line += 0x20;
 	__install_isr(int_line, _net_handler);
 
-	// PORT reset
+	// PORT reset (Might not actually need this,
+	// but it can't hurt. We need to delay after the reset
+	// command is sent to allow the card time to restore some
+	// sane defaults.
 	__outl(eth0.CSR_BAR + E_CSR_PORT, 0);
 	__delay(100);
+
+	// Set up linear addressing because it is much more sane
 	__outl(eth0.CSR_BAR + E_CSR_SCB_GEN_PTR, 0);
 	__outb(eth0.CSR_BAR + E_CSR_SCB_COM_WORD , SCB_CCMD_LOAD_CU_BASE);
+	nic_wait();
 	__outb(eth0.CSR_BAR + E_CSR_SCB_COM_WORD , SCB_RCMD_LOAD_RU_BASE);
+	nic_wait();
 
 	e100_cmd_dump_t dump;
 	dump.header.stat = 0x0000;

@@ -133,8 +133,14 @@
  */
 #define MAC_ADDR_LEN            6       /* 6 bytes in a MAC Address */
 
+/*
+ * A MAC address
+ */
 typedef uint8_t mac_addr_t[MAC_ADDR_LEN];
 
+/*
+ * The default structure that the card will use for commands sent to it
+ */
 typedef struct e100_cmd_header
 {
 	uint16_t stat;
@@ -142,6 +148,10 @@ typedef struct e100_cmd_header
 	uint32_t link_offset;
 } e100_cmd_header_t;
 
+/*
+ * Used by the dump command
+ * Dumps a ton of information into a large buffer
+ */
 typedef struct e100_cmd_dump
 {
 	e100_cmd_header_t header;
@@ -149,6 +159,10 @@ typedef struct e100_cmd_dump
 	uint8_t buffer[596];
 } e100_cmd_dump_t;
 
+/*
+ * All of the information about the network card
+ * that I care to save under a single roof
+ */
 typedef struct e100_device
 {
 	device_t *pci;
@@ -165,10 +179,27 @@ e100_device_t eth0;
 /*
  * Prototypes
  */
+/*
+ * Initialize the network card and other related items
+ */
 void _net_init(void);
+
+/*
+ * Print out various debugging information
+ */
 void net_pci_dump(void);
 void net_CSR_dump(void);
+
+/*
+ *  After every command we need to wait for the command register to
+ *  read 0 to ensure that the command was received by the device
+ */
 void nic_wait(void);
+
+/*
+ * These are to make life easier.
+ * They could just as easily be macros, but I hate macros
+ */
 uint8_t eth_pci_readb (uint8_t reg);
 uint16_t eth_pci_read (uint8_t reg);
 uint32_t eth_pci_readl (uint8_t reg);
