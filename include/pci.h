@@ -24,6 +24,8 @@
 // Globals
 #define MAX_DEVICES	32
 
+#ifndef __SP2_ASM__
+
 typedef struct device {
 	ushort_t bus;
 	ushort_t slot;
@@ -56,5 +58,7 @@ void pci_write(ushort_t bus, ushort_t slot, ushort_t func, ushort_t reg, ushort_
 // Helper Functions
 
 ulong_t pci_getAddress(ushort_t bus, ushort_t slot, ushort_t func, ushort_t reg);
+
+#endif
 
 #endif

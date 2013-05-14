@@ -194,7 +194,7 @@ typedef struct e100_device
 /*
  * Globals
  */
-extern e100_device_t eth0;
+extern volatile e100_device_t eth0;
 
 /*
  * Prototypes
@@ -203,6 +203,13 @@ extern e100_device_t eth0;
  * Initialize the network card and other related items
  */
 void _net_init(void);
+
+/*
+ * Because interrupts need to be turned on for part of the
+ * initialization to happen, this second init function gets
+ * called from within the ISR after the first interrupt.
+ */
+void _net_complete_init(void);
 
 /*
  * Print out various debugging information

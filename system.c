@@ -448,6 +448,7 @@ void _init( void ) {
 	*/
 
 	c_io_init();
+	c_clearscreen();
 #ifdef ISR_DEBUGGING_CODE
 	c_setscroll( 0, 7, 99, 99 );
 	c_puts_at( 0, 6, "================================================================================" );

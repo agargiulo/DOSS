@@ -39,8 +39,23 @@
 ** PUBLIC FUNCTIONS
 */
 
+static int first_interrupt = 1;
+
 void _net_handler(int vector, int code)
 {
+
+	if (first_interrupt)
+	{
+		first_interrupt = 0;
+		__outb( PIC_MASTER_CMD_PORT, PIC_EOI );
+		if( vector >= 0x28 && vector <= 0x2f )
+		{
+			__outb( PIC_SLAVE_CMD_PORT, PIC_EOI );
+		}
+		_net_complete_init();
+		return;
+	}
+
 	uint16_t SCB_STAT_ACK_Byte  = __inb(eth0.CSR_BAR + E_CSR_SCB_STAT_ACK);
 	uint16_t SCB_STAT_Byte = __inb(eth0.CSR_BAR + E_CSR_SCB_STAT_WORD);
 	c_printf("SCB_STATUS: 0x%02x%02x\n", SCB_STAT_ACK_Byte, SCB_STAT_Byte);
@@ -70,6 +85,8 @@ void _net_handler(int vector, int code)
 	}
 	if ((SCB_STAT_ACK_Byte & SCB_STAT_SWI) != 0)
 	{
+		c_puts("SWI\n");
+		c_printf("CU Command complete (%d)\n", eth0.CU_finished);
 		__outb(eth0.CSR_BAR + E_CSR_SCB_STAT_ACK, SCB_STAT_SWI);
 	}
 	if ((SCB_STAT_ACK_Byte & SCB_STAT_FCP) != 0)

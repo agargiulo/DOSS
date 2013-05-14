@@ -25,11 +25,12 @@
 /*
  * PRIVATE GLOBAL VARIABLES
  */
+e100_cmd_dump_t dump;
 
 /*
  * PUBLIC GLOBAL VARIABLES
  */
-e100_device_t eth0;
+volatile e100_device_t eth0;
 
 /*
  * PRIVATE FUNCTIONS
@@ -63,17 +64,32 @@ void _net_init(void)
 	 */
 	eth0.CSR_BAR = eth_pci_readl(P_ETH_CSR_IO_MAP_BAR) & PCI_BAR_IOMAP_MASK;
 
+	dump.header.stat = 0x0000;
+	dump.header.cmd = ACT_CMD_EL | ACT_CMD_I | ACT_CMD_DUMP;
+	dump.header.link_offset = 0x00000000;
+	dump.buff_addr = (uint32_t)dump.buffer;
+
+	eth0.CU_finished = 0;
+
 	uint8_t int_line = eth_pci_readb(P_ETH_INT_LINE);
 	int_line += 0x20;
 	__install_isr(int_line, _net_handler);
 
 	// PORT reset (Might not actually need this,
-	// but it can't hurt. We need to delay after the reset
+	// but it can't hurt.) We need to delay after the reset
 	// command is sent to allow the card time to restore some
 	// sane defaults.
 	__outl(eth0.CSR_BAR + E_CSR_PORT, 0);
 	__delay(100);
 
+	__outb(eth0.CSR_BAR + E_CSR_SCB_COM_WORD + 1, 0x02);
+	c_puts(" network\n");
+
+
+}
+
+void _net_complete_init( void )
+{
 	// Set up linear addressing because it is much more sane
 	__outl(eth0.CSR_BAR + E_CSR_SCB_GEN_PTR, 0);
 	__outb(eth0.CSR_BAR + E_CSR_SCB_COM_WORD , SCB_CCMD_LOAD_CU_BASE);
@@ -81,22 +97,12 @@ void _net_init(void)
 	__outb(eth0.CSR_BAR + E_CSR_SCB_COM_WORD , SCB_RCMD_LOAD_RU_BASE);
 	nic_wait();
 
-	e100_cmd_dump_t dump;
-	dump.header.stat = 0x0000;
-	dump.header.cmd = ACT_CMD_EL | ACT_CMD_I | ACT_CMD_DUMP;
-	dump.header.link_offset = 0x00000000;
-	dump.buff_addr = (uint32_t)dump.buffer;
-
-	eth0.CU_finished = 0;
 	__outl(eth0.CSR_BAR + E_CSR_SCB_GEN_PTR, (uint32_t) &dump);
 	__outb(eth0.CSR_BAR + E_CSR_SCB_COM_WORD, SCB_CCMD_CU_START);
 	nic_wait();
 
-	int count = 0;
 	while (eth0.CU_finished != 1)
 	{
-		c_printf("Checked %d times so far\n", count++);
-		c_puts("CU not done yet, delaying for 500 ms\n");
 		__delay(5000);
 	}
 
@@ -111,12 +117,14 @@ void _net_init(void)
 		}
 		else
 		{
-			c_puts("Error: dump command did not succeed\n");
+			c_puts("\nError: dump command did not succeed\n");
+			return;
 		}
 	}
 	else
 	{
-		c_puts("Error: dump command did not finish\n");
+		c_puts("\nError: dump command did not finish\n");
+		return;
 	}
 	
 	c_puts("Hardware address is: ");
@@ -125,17 +133,13 @@ void _net_init(void)
 		c_printf("%02x:", eth0.hw_addr[i]);
 	}
 	c_printf("%02x\n", eth0.hw_addr[MAC_ADDR_LEN - 1]);
-
-	c_puts(" network\n");
 }
+
 
 void nic_wait( void )
 {
-	uint8_t i = 0;
 	while (__inb(eth0.CSR_BAR + E_CSR_SCB_COM_WORD))
 	{
-		c_printf("i: %d\n", i);
-		i = (i + 1) % 100;
 		__delay(2);
 	}
 }
