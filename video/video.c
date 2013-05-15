@@ -95,19 +95,23 @@ void _video_test2( void )
 		switch(ch)
 		{
 			case 115:
-				p1.y++; p2.y++;
+				p1.y+=2; p2.y+=2;
 				break;
 			case 97:
-				p1.x--; p2.y--;
+				p1.x-=2; p2.x-=2;
 				break;
 			case 119:
-				p1.y--; p2.y--;
+				p1.y-=2; p2.y-=2;
 				break;
 			case 100:
-				p1.x++; p2.x++;
+				p1.x+=2; p2.x+=2;
+				break;
+			case 99:
+				c++;
 				break;
 		}
-
+		
+		if(c > 13) c = 0;
 		if(p1.x < 0) {p1.x = 309; p2.x = 319;}
 		if(p1.y < 0) {p1.y = 189; p2.y = 199;}
 		if(p2.x >= 320) {p1.x = 0; p2.x = 10;}
