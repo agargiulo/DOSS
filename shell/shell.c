@@ -54,7 +54,7 @@ shell_cmd command_tab[] = {
 	{"append", run_append},
 	{"stat", run_stat},
 	{"mount", run_mount},
-	{"videotest", run_videotest}
+	{"videotest", run_videotest},
 	{"rm", run_rm}
 };
 

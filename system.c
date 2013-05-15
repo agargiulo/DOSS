@@ -481,6 +481,9 @@ void _init( void ) {
 	_net_init();
 
 	c_puts( "\n" );
+	c_puts("Launching the shell. Please be patient\n");
+	__delay(1000);
+	c_clearscreen();
 
 	/*
 	** Create the initial system ESP
