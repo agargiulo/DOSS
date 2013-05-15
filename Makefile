@@ -13,13 +13,17 @@ U_C_SRC = clock.c klibc.c process.c queue.c scheduler.c sio.c \
 	shell/halt.c shell/lspci.c shell/test.c shell/hosts.c pci/pci.c \
 	disk/disk.c ofs.c video/video.c video/vga.c network/8255x.c \
 	network/net_handler.c network/net.c
+	shell/lsblk.c shell/ls.c shell/touch.c shell/cat.c shell/df.c shell/append.c \
+	qalloc.c shell/stat.c shell/mount.c
 
-U_C_OBJ = clock.o klibc.o process.o queue.o scheduler.o sio.o \
+U_C_SRC = clock.o klibc.o process.o queue.o scheduler.o sio.o \
 	stack.o syscall.o system.o ulibc.o user.o string.o shell/shell.o \
 	shell/ps.o shell/clear.o shell/help.o shell/reboot.o shell/echo.o \
 	shell/halt.o shell/lspci.o shell/test.o shell/hosts.o pci/pci.o \
 	disk/disk.o ofs.o video/video.o video/vga.o network/8255x.o \
 	network/net_handler.o network/net.o
+	shell/lsblk.o shell/ls.o shell/touch.o shell/cat.o shell/df.o shell/append.o \
+	qalloc.o shell/stat.o shell/mount.o
 
 U_S_SRC = klibs.S ulibs.S video/video_s.s
 U_S_OBJ = klibs.o ulibs.o video_s.o
@@ -223,6 +227,8 @@ system.o: ./include/syscall.h ./include/sio.h ./include/queue.h
 system.o: ./include/scheduler.h ./include/pci.h ./include/disk.h
 system.o: ./include/types.h ./include/8255x.h ./include/startup.h
 system.o: ./include/x86arch.h ./include/user.h ./include/ulib.h
+system.o: ./include/startup.h ./include/x86arch.h ./include/user.h
+system.o: ./include/ulib.h
 ulibc.o: ./include/common.h
 user.o: ./include/common.h ./include/user.h ./include/c_io.h
 user.o: ./include/shell.h ./include/net.h ./include/8255x.h ./include/pci.h
@@ -256,3 +262,21 @@ network/net_handler.o: ./include/startup.h ./include/pci.h ./include/8255x.h
 network/net_handler.o: ./include/net_handler.h
 network/net.o: ./include/common.h ./include/string.h ./include/net.h
 network/net.o: ./include/8255x.h ./include/pci.h
+pci/pci.o: ./include/common.h ./include/pci.h ./include/startup.h
+shell/test.o: ./include/disk.h ./include/common.h ./include/c_io.h
+shell/test.o: ./include/string.h ./include/ofs.h
+disk/disk.o: ./include/disk.h ./include/common.h ./include/pci.h
+disk/disk.o: ./include/startup.h ./include/support.h ./include/ulib.h
+disk/disk.o: ./include/process.h ./include/clock.h ./include/stack.h
+disk/disk.o: ./include/x86arch.h
+ofs.o: ./include/common.h ./include/string.h ./include/disk.h ./include/ofs.h
+ofs.o: ./include/qalloc.h ./include/clock.h
+shell/lsblk.o: ./include/disk.h ./include/common.h
+shell/ls.o: ./include/common.h ./include/ofs.h
+shell/touch.o: ./include/common.h ./include/ofs.h
+shell/cat.o: ./include/common.h ./include/ofs.h
+shell/df.o: ./include/common.h ./include/ofs.h
+shell/append.o: ./include/common.h ./include/ofs.h
+qalloc.o: ./include/common.h ./include/qalloc.h
+shell/stat.o: ./include/common.h ./include/ofs.h
+shell/mount.o: ./include/common.h ./include/ofs.h

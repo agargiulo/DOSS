@@ -42,6 +42,16 @@ void run_test(int argc, char **argv);
 void run_halt(int argc, char **argv);
 void run_hosts(int argc, char **argv);
 
+void run_lsblk(int argc, char **argv);
+void run_ls(int argc, char **argv);
+void run_cat(int argc, char **argv);
+void run_df(int argc, char **argv);
+void run_touch(int argc, char **argv);
+void run_append(int argc, char **argv);
+void run_stat(int argc, char **argv);
+void run_mount(int argc, char **argv);
+
+
 // Write a message to both the serial terminal and the console
 void wall_s(char *message);
 void wall_ch(char ch);

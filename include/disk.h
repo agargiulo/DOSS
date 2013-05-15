@@ -15,19 +15,6 @@
 #define __SP2_KERNEL__
 
 #include <common.h>
-#include <types.h>
-
-/*
-** Start of C-only definitions
-*/
-
-/*
-** Types
-*/
-
-/*
-** Globals
-*/
 
 /*
 ** Prototypes
@@ -43,13 +30,14 @@ void _disk_init( void );
  */
 void print_devices( void );
 
+
 /**
  * Public function for reading data from the current disk
  * @param sector	Sector to read
  * @param buffer	Buffer to read into
  * @param n		Number of bytes to read
  */
-status_t disk_read( uint32_t sector, uint8_t *buffer, size_t n );
+status_t disk_read( uint32_t sector, uint8_t *buffer, size_t nbytes );
 status_t read_sector( uint32_t sector, uint8_t *buffer );
 
 /**
@@ -58,7 +46,7 @@ status_t read_sector( uint32_t sector, uint8_t *buffer );
  * @param buffer	Source buffer
  * @param n		Number of bytes to write
  */
-status_t disk_write( uint32_t sector, const uint8_t *buffer, size_t n );
+status_t disk_write( uint32_t sector, const uint8_t *buffer, size_t nbytes );
 status_t write_sector( uint32_t sector, const uint8_t *buffer );
 
 
