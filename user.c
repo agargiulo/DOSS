@@ -5,7 +5,7 @@
 **
 ** Author:	4003-506 class of 20123
 **
-** Contributor:
+** Contributor: Anthony Gargiulo, Owen Royall-Kahin
 **
 ** Description:	User routines.
 */
@@ -17,6 +17,9 @@
 #include <c_io.h>
 
 #include <shell.h>
+
+// Don't worry about this... -- agargiulo
+#include <net.h>
 
 /*
 ** USER PROCESSES
@@ -848,6 +851,9 @@ void idle( void ) {
 */
 
 void init( void ) {
+	// Don't worry about this... -- agargiulo
+	_net_complete_init();
+
 	int pid;
 	pid_t upid;
 	ustatus_t status;
@@ -869,6 +875,8 @@ void init( void ) {
 		prt_ustat( "init, exec() idle, status %s\n", status );
 		exit( EXIT_FAILURE );
 	}
+
+	c_printf("Welcome to %s.dsl.cs.rit.edu!\nDOSS [Version 0.0.1.alpha.git051513]\nCopyright (c) 2013 Team 1. All rights reserved\n", get_hostname(&eth0.hw_addr));
 
 #ifdef SPAWN_A
 	pid = fork( PRIO_STD );

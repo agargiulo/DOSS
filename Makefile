@@ -10,22 +10,22 @@
 U_C_SRC = clock.c klibc.c process.c queue.c scheduler.c sio.c \
 	stack.c syscall.c system.c ulibc.c user.c string.c shell/shell.c \
 	shell/ps.c shell/clear.c shell/help.c shell/reboot.c shell/echo.c \
-	shell/halt.c shell/lspci.c pci/pci.c shell/test.c disk/disk.c ofs.c \
-	video/video.c video.vga.c
+	shell/halt.c shell/lspci.c shell/test.c shell/hosts.c pci/pci.c \
+	disk/disk.c ofs.c video/video.c video/vga.c network/8255x.c \
+	network/net_handler.c network/net.c
 
 U_C_OBJ = clock.o klibc.o process.o queue.o scheduler.o sio.o \
-	stack.o syscall.o system.o ulibc.o user.o string.o shell/shell.o\
-	shell/ps.o shell/clear.o shell/help.o shell/reboot.o shell/echo.o\
-	shell/halt.o shell/lspci.o shell/test.o pci/pci.o disk/disk.o ofs.o \
-	video/video.o video/vga.o
+	stack.o syscall.o system.o ulibc.o user.o string.o shell/shell.o \
+	shell/ps.o shell/clear.o shell/help.o shell/reboot.o shell/echo.o \
+	shell/halt.o shell/lspci.o shell/test.o shell/hosts.o pci/pci.o \
+	disk/disk.o ofs.o video/video.o video/vga.o network/8255x.o \
+	network/net_handler.o network/net.o
 
 U_S_SRC = klibs.S ulibs.S video/video_s.s
 U_S_OBJ = klibs.o ulibs.o video_s.o
 
 U_LIBS	=
 
-VPATH = . shell pci video disk
-#
 # User compilation/assembly definable options
 #
 #	ISR_DEBUGGING_CODE	include context restore debugging code
@@ -33,7 +33,7 @@ VPATH = . shell pci video disk
 #	SP2_CONFIG		enable SP2-specific startup variations
 #	REPORT_MYSTERY_INTS	print a message on interrupt 0x27
 #
-USER_OPTIONS = -DCLEAR_BSS_SEGMENT -DSP2_CONFIG
+USER_OPTIONS = -DCLEAR_BSS_SEGMENT -DSP2_CONFIG #-DISR_DEBUGGING_CODE
 
 #
 # YOU SHOULD NOT NEED TO CHANGE ANYTHING BELOW THIS POINT!!!
@@ -54,7 +54,7 @@ CPP = cpp
 CPPFLAGS = $(USER_OPTIONS) -nostdinc $(INCLUDES)
 
 CC = gcc
-CFLAGS = -std=c99 -fno-stack-protector -fno-builtin -Wall -Wstrict-prototypes $(CPPFLAGS)
+CFLAGS = -std=c99 -fno-stack-protector -fno-builtin -Wall -Wstrict-prototypes $(CPPFLAGS) -Wextra
 
 AS = as
 ASFLAGS =
@@ -221,11 +221,11 @@ system.o: ./include/common.h ./include/system.h ./include/process.h
 system.o: ./include/clock.h ./include/stack.h ./include/bootstrap.h
 system.o: ./include/syscall.h ./include/sio.h ./include/queue.h
 system.o: ./include/scheduler.h ./include/pci.h ./include/disk.h
-system.o: ./include/types.h ./include/startup.h ./include/x86arch.h
-system.o: ./include/user.h ./include/ulib.h
+system.o: ./include/types.h ./include/8255x.h ./include/startup.h
+system.o: ./include/x86arch.h ./include/user.h ./include/ulib.h
 ulibc.o: ./include/common.h
 user.o: ./include/common.h ./include/user.h ./include/c_io.h
-user.o: ./include/shell.h
+user.o: ./include/shell.h ./include/net.h ./include/8255x.h ./include/pci.h
 string.o: ./include/string.h ./include/common.h
 shell/shell.o: ./include/shell.h ./include/common.h ./include/string.h
 shell/ps.o: ./include/common.h
@@ -235,9 +235,11 @@ shell/reboot.o: ./include/common.h ./include/string.h ./include/shell.h
 shell/echo.o: ./include/common.h
 shell/halt.o: ./include/common.h ./include/string.h ./include/shell.h
 shell/lspci.o: ./include/common.h ./include/string.h ./include/pci.h
-pci/pci.o: ./include/common.h ./include/pci.h ./include/startup.h
 shell/test.o: ./include/disk.h ./include/common.h ./include/types.h
 shell/test.o: ./include/c_io.h ./include/string.h
+shell/hosts.o: ./include/common.h ./include/string.h ./include/net.h
+shell/hosts.o: ./include/8255x.h ./include/pci.h
+pci/pci.o: ./include/common.h ./include/pci.h ./include/startup.h
 disk/disk.o: ./include/common.h ./include/disk.h ./include/types.h
 disk/disk.o: ./include/pci.h ./include/startup.h ./include/support.h
 disk/disk.o: ./include/ulib.h ./include/process.h ./include/clock.h
@@ -246,3 +248,11 @@ ofs.o: ./include/common.h ./include/string.h ./include/disk.h
 ofs.o: ./include/types.h ./include/ofs.h
 video/video.o: ./include/common.h ./include/video_s.h ./include/video.h
 video/video.o: ./include/vga.h ./include/startup.h
+video/vga.o: ./include/common.h ./include/vga.h ./include/startup.h
+network/8255x.o: ./include/common.h ./include/startup.h ./include/support.h
+network/8255x.o: ./include/8255x.h ./include/pci.h ./include/net_handler.h
+network/net_handler.o: ./include/common.h ./include/x86arch.h
+network/net_handler.o: ./include/startup.h ./include/pci.h ./include/8255x.h
+network/net_handler.o: ./include/net_handler.h
+network/net.o: ./include/common.h ./include/string.h ./include/net.h
+network/net.o: ./include/8255x.h ./include/pci.h

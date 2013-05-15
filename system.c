@@ -1,7 +1,6 @@
 /*
 ** SCCS ID:	@(#)system.c	1.1	4/2/13
-**
-** File:	system.c
+** ** File:	system.c
 **
 ** Author:	4003-506 class of 20123
 **
@@ -23,6 +22,7 @@
 #include <scheduler.h>
 #include <pci.h>
 #include <disk.h>
+#include <8255x.h>
 
 #include <startup.h>
 #include <x86arch.h>
@@ -440,12 +440,20 @@ void _init( void ) {
 	*/
 
 	__init_interrupts();	// IDT and PIC initialization
+	// Ignore the 0x2A interrupt which happens when removing or inserting a
+	// flash drive.
+	__install_isr( 0x2A,  _ignore_isr );
 
 	/*
 	** Console I/O system.
 	*/
 
 	c_io_init();
+	c_clearscreen();
+#ifdef ISR_DEBUGGING_CODE
+	c_setscroll( 0, 7, 99, 99 );
+	c_puts_at( 0, 6, "================================================================================" );
+#endif
 
 	/*
 	** 20123-SPECIFIC CODE STARTS HERE
@@ -469,6 +477,7 @@ void _init( void ) {
 	_clock_init();
 	_pci_init();
 	_disk_init();
+	_net_init();
 
 	c_puts( "\n" );
 

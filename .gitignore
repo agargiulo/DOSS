@@ -1,5 +1,7 @@
 *.b
 *.image
+*.i
+*.s
 *.lst
 *.o
 *.vim
