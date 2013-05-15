@@ -81,6 +81,7 @@ void _video_test2( void )
 	point oldp1 = p1;
 	point oldp2 = p2;
 	Color c = WHITE;
+	//demobox = {p1, p2, oldp1, oldp2, c, 0};
 
 	for(;;)
 	{
@@ -89,20 +90,29 @@ void _video_test2( void )
 		_video_redraw();
 		sleep(0);
 		oldp1 = p1; oldp2 = p2;
-		p1.x++; p2.x++;
-		if(p2.x >= 320)
+		
+		int ch = c_getchar();
+		switch(ch)
 		{
-			p1.x = 0;
-			p2.x = 10;
-			p1.y += 10;
-			p2.y += 10;
-
-			if(p2.y >= 200)
-			{
-				p1.y = 0;
-				p2.y = 10;
-			}
+			case 115:
+				p1.y++; p2.y++;
+				break;
+			case 97:
+				p1.x--; p2.y--;
+				break;
+			case 119:
+				p1.y--; p2.y--;
+				break;
+			case 100:
+				p1.x++; p2.x++;
+				break;
 		}
+
+		if(p1.x < 0) {p1.x = 309; p2.x = 319;}
+		if(p1.y < 0) {p1.y = 189; p2.y = 199;}
+		if(p2.x >= 320) {p1.x = 0; p2.x = 10;}
+		if(p2.y >= 200) {p1.y = 0; p2.y = 10;}
+
 	}
 }
 
