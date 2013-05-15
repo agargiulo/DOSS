@@ -362,6 +362,96 @@ void write_registers(unsigned char *regs)
 	__outb(VGA_AC_INDEX, 0x20);
 }
 
+void set_plane(unsigned p)
+{
+	unsigned char pmask;
+
+	p &= 3;
+	pmask = 1 << p;
+	
+	/* set read plane */
+	__outb(VGA_GC_INDEX, 4);
+	__outb(VGA_GC_DATA, p);
+	
+	/* set write plane */
+	__outb(VGA_SEQ_INDEX, 2);
+	__outb(VGA_SEQ_DATA, pmask);
+}
+
+static unsigned get_fb_seg(void)
+{
+	unsigned seg;
+
+	__outb(VGA_GC_INDEX, 6);
+	seg = __inb(VGA_GC_DATA);
+	seg >>= 2;
+	seg &= 3;
+	switch(seg)
+	{
+	case 0:
+	case 1:
+		seg = 0xA000;
+		break;
+	case 2:
+		seg = 0xB000;
+		break;
+	case 3:
+		seg = 0xB800;
+		break;
+	}
+	return seg;
+}
+
+void write_font( unsigned char *buf )
+{
+	unsigned char seq2, seq4, gc4, gc5, gc6;
+	unsigned i;
+
+	/* save registers
+	 * set_plane() modifies GC 4 and SEQ 2, so save them as well */
+	__outb(VGA_SEQ_INDEX, 2);
+	seq2 = __inb(VGA_SEQ_DATA);
+
+	__outb(VGA_SEQ_INDEX, 4);
+	seq4 = __inb(VGA_SEQ_DATA);
+/* turn off even-odd addressing (set flat addressing)
+ * assume: chain-4 addressing already off */
+	__outb(VGA_SEQ_DATA, seq4 | 0x04);
+
+	__outb(VGA_GC_INDEX, 4);
+	gc4 = __inb(VGA_GC_DATA);
+
+	__outb(VGA_GC_INDEX, 5);
+	gc5 = __inb(VGA_GC_DATA);
+/* turn off even-odd addressing */
+	__outb(VGA_GC_DATA, gc5 & ~0x10);
+
+	__outb(VGA_GC_INDEX, 6);
+	gc6 = __inb(VGA_GC_DATA);
+/* turn off even-odd addressing */
+	__outb(VGA_GC_DATA, gc6 & ~0x02);
+/* write font to plane P4 */
+	set_plane(2);
+/* write font 0 */
+	for(i = 0; i < 256; i++)
+	{
+		_kmemcpy( (byte_t*) (0xb800 | (16384u * 0 + i * 32)), (byte_t*) buf, 16);
+		buf += 16;
+	}
+
+	/* restore registers */
+	__outb(VGA_SEQ_INDEX, 2);
+	__outb(VGA_SEQ_DATA, seq2);
+	__outb(VGA_SEQ_INDEX, 4);
+	__outb(VGA_SEQ_DATA, seq4);
+	__outb(VGA_GC_INDEX, 4);
+	__outb(VGA_GC_DATA, gc4);
+	__outb(VGA_GC_INDEX, 5);
+	__outb(VGA_GC_DATA, gc5);
+	__outb(VGA_GC_INDEX, 6);
+	__outb(VGA_GC_DATA, gc6);
+}
+
 void _video_setmode_13( void )
 {
 	write_registers(mode_320_200_256);
@@ -370,4 +460,5 @@ void _video_setmode_13( void )
 void _video_setmode_text( void )
 {
 	write_registers(mode_80_25_text);
+	write_registers(font_8_16);
 }

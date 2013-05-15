@@ -60,6 +60,7 @@
 */
 
 void write_registers(unsigned char *regs);
+void write_font( unsigned char *buf );
 
 void _video_setmode_13( void );
 void _video_setmode_text( void );

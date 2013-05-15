@@ -6,7 +6,7 @@
 #include <vga.h>
 #include <startup.h>
 
-ubyte_t buffer[64000] = {0};
+byte_t vbuf[64000] = {0};
 
 void _video_test( void )
 {
@@ -44,17 +44,17 @@ void _video_test( void )
 	_video_box_filled(&p5, &p6, c);
 
 	__delay(15);
-	_kmemcpy(buffer, (ubyte_t*) 0xa0000, 64000);
+	_kmemcpy(vbuf, (byte_t*) 0xa0000, 64000);
 	for(i=0; i < 320*200; i++) pixel[i] = 0;
 	__delay(15);
-	_kmemcpy( (ubyte_t*) 0xa0000, buffer, 64000);
+	_kmemcpy( (byte_t*) 0xa0000, vbuf, 64000);
 	__delay(15);
 
 	//Switch back to Text Mode
-	//__delay(10);
-	//for(i = 0; i < 320*200; i++) pixel[i] = 0;
-	//__delay(10);
-	//_video_setmode_text();
+	__delay(10);
+	for(i = 0; i < 320*200; i++) pixel[i] = 0;
+	__delay(10);
+	_video_setmode_text();
 
 }
 
@@ -146,3 +146,22 @@ void _video_box_filled(point *p1, point *p2, enum Color c)
 	}
 }
 
+void _video_sync()
+{
+}
+
+void _video_obj_move(video_object *obj, point *topleft)
+{
+}
+
+void _video_obj_resize(video_object *obj, point *botright)
+{
+}
+
+void _video_obj_recolor(video_object *obj, enum Color color)
+{
+}
+
+void _video_obj_erase(video_object *obj)
+{
+}

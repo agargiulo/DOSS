@@ -51,20 +51,39 @@ typedef enum Color
 
 typedef struct point {int x,y;} point;
 
+typedef struct video_object
+{
+	point p1, p2, oldp1, oldp2,
+	enum Color color,
+	uint8_t flags;
+} video_object;
+
 /*
 ** Globals
 */
+
+extern queue_t video_refresh;
+extern byte_t vbuf[64000] = {0};
 
 /*
 ** Prototypes
 */
 
 int abs(int num);
+
 void _video_test( void );
+
 void _video_point(int x, int y, enum Color c);
 void _video_line(point *p1, point *p2, enum Color c);
 void _video_box(point *p1, point *p2, enum Color c);
 void _video_box_filled(point *p1, point *p2, enum Color c);
+
+void _video_sync();
+
+void _video_obj_move(video_object *obj, point *topleft);
+void _video_obj_resize(video_object *obj, point *botright);
+void _video_obj_recolor(video_object *obj, enum Color color);
+void _video_obj_erase(video_object *obj);
 
 #endif
 

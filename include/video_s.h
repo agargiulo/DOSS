@@ -1,23 +1,31 @@
 /*
 ** SCCS ID:	%W%	%G%
 **
-** File:	?
+** File:	video_s.h
 **
-** Author:	4003-506 class of 20123
+** Author:	Alex Walcutt
 **
 ** Contributor:
 **
-** Description:	?
+** Description:	Assembly language functions for common VESA functions
 */
 
-#ifndef _?_H_
-#define _?_H_
+#ifndef _VIDEO_S_H_
+#define _VIDEO_S_H_
 
 #include <common.h>
 
 /*
 ** General (C and/or assembly) definitions
 */
+
+
+void _video_prot2real( void );
+void _video_real2prot( void );
+void _video_set_mode_13( void );
+void _video_plot_pixel_test( void );
+void _video_set_mode_text( void );
+
 
 #ifndef __SP2_ASM__
 
