@@ -45,7 +45,7 @@ shell_cmd command_tab[] = {
 	{"lspci", run_lspci},
 	{"test", run_test},
 	{"halt", run_halt},
-	{"hosts", run_hosts}
+	{"hosts", run_hosts},
 	{"lsblk", run_lsblk},
 	{"ls", run_ls},
 	{"touch", run_touch},
