@@ -12,7 +12,6 @@
 
 #include <string.h>
 
-
 /*
 ** PRIVATE DEFINITIONS
 */
@@ -35,7 +34,7 @@ typedef struct shell_cmd {
 
 char *ps1 = "C:\\Users\\team1>";
 
-int command_count = 17;
+int command_count = 18;
 shell_cmd command_tab[] = {
 	{"ps", run_ps},
 	{"clear", run_clear},
@@ -53,7 +52,8 @@ shell_cmd command_tab[] = {
 	{"df", run_df},
 	{"append", run_append},
 	{"stat", run_stat},
-	{"mount", run_mount}
+	{"mount", run_mount},
+	{"videotest", run_videotest}
 };
 
 char buffer[INPUT_LEN];

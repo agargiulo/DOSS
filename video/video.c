@@ -8,6 +8,15 @@
 
 byte_t vbuf[64000] = {0};
 
+void _video_init( void )
+{
+	pid_t pid = fork( PRIO_HIGH );
+	if( pid == 0 )
+	{
+		exec(_video_sync);
+	}
+}
+
 void _video_test( void )
 {
 	unsigned int i;
@@ -16,8 +25,9 @@ void _video_test( void )
 	//Switch to Mode 0x13
 	__delay(10);
 	_video_setmode_13();
+	_video_init();
 
-	for(i = 0; i < 320*200; i++) pixel[i] = 0;
+	for(i = 0; i < 320*200; i++) vbuf[i] = 0;
 
 	enum Color c;
 
@@ -43,26 +53,29 @@ void _video_test( void )
 	c = YELLOW;
 	_video_box_filled(&p5, &p6, c);
 
-	__delay(15);
-	_kmemcpy(vbuf, (byte_t*) 0xa0000, 64000);
-	for(i=0; i < 320*200; i++) pixel[i] = 0;
-	__delay(15);
-	_kmemcpy( (byte_t*) 0xa0000, vbuf, 64000);
-	__delay(15);
+	sleep(1);
+	for(i=0; i < 320*200; i++) vbuf[i] = 0;
+	sleep(1);
+	
+	c = WHITE;
+	_video_box_filled(&p5, &p6, c);
+	//__delay(15);
 
 	//Switch back to Text Mode
-	__delay(10);
-	for(i = 0; i < 320*200; i++) pixel[i] = 0;
-	__delay(10);
-	_video_setmode_text();
+	//__delay(10);
+	//for(i = 0; i < 320*200; i++) pixel[i] = 0;
+	//__delay(10);
+	//_video_setmode_text();
 
 }
 
 void _video_point(int x, int y, enum Color c)
 {
+	unsigned char *vmem = (unsigned char*) 0xa0000;
+
 	int offset = (y * 320) + x;
-	unsigned char *pixel = (unsigned char*) 0xa0000;
-	pixel[offset] = (int) c;
+	//vmem[offset] = (int) c;
+	vbuf[offset] = (int) c;
 }
 
 int abs(int num)
@@ -148,20 +161,47 @@ void _video_box_filled(point *p1, point *p2, enum Color c)
 
 void _video_sync()
 {
+	unsigned char *vmem = (unsigned char*) 0xa0000;
+
+	for(;;)
+	{
+		for(int i = 0; i < 64000; i++)
+		{
+			vmem[i] = vbuf[i];
+		}
+
+		sleep(0);
+	}
 }
 
 void _video_obj_move(video_object *obj, point *topleft)
 {
+	int horiz = (obj->p2.x - obj->p1.x);
+	int vert = (obj->p2.y - obj->p1.y);
+	
+	point newbotright = {topleft->x + horiz, topleft->y + vert};
+
+	obj->oldp1 = obj->p1;
+	obj->oldp2 = obj->p2;
+	obj->p1 = *topleft;
+	obj->p2 = newbotright;
 }
 
-void _video_obj_resize(video_object *obj, point *botright)
+void _video_obj_resize(video_object *obj, int dx, int dy)
 {
+	obj->oldp1 = obj->p1;
+	obj->oldp2 = obj->p2;
+
+	obj->p2.x += dx;
+	obj->p2.y += dy;
 }
 
 void _video_obj_recolor(video_object *obj, enum Color color)
 {
+	obj->color = color;
 }
 
 void _video_obj_erase(video_object *obj)
 {
+	//add to refresh queue I guess
 }

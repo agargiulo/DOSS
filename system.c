@@ -23,6 +23,7 @@
 #include <pci.h>
 #include <disk.h>
 #include <8255x.h>
+#include <video.h>
 
 #include <startup.h>
 #include <x86arch.h>
@@ -480,8 +481,6 @@ void _init( void ) {
 	_net_init();
 
 	c_puts( "\n" );
-
-	_video_test();
 
 	/*
 	** Create the initial system ESP
