@@ -874,6 +874,8 @@ void init( void ) {
 		exit( EXIT_FAILURE );
 	}
 
+	c_printf("Welcome to %s.dsl.cs.rit.edu!\nDOSS [Version 0.0.1.alpha.git051513]\nCopyright (c) 2013 Team 1. All rights reserved\n", get_hostname(&eth0.hw_addr));
+
 #ifdef SPAWN_A
 	pid = fork( PRIO_STD );
 	if( pid < 0 ) {

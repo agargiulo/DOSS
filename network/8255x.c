@@ -126,13 +126,6 @@ void _net_complete_init( void )
 		c_puts("\nError: dump command did not finish\n");
 		return;
 	}
-	
-	c_puts("Hardware address is: ");
-	for (int i = 0; i < MAC_ADDR_LEN - 1; i++)
-	{
-		c_printf("%02x:", eth0.hw_addr[i]);
-	}
-	c_printf("%02x\n", eth0.hw_addr[MAC_ADDR_LEN - 1]);
 }
 
 

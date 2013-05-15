@@ -41,11 +41,17 @@ extern uint8_t num_known_hosts;
 /*
 ** Prototypes
 */
-char *get_hostname(mac_addr_t hw_addr);
+
+/*
+ * translate mac address struct to hostname
+ */
+char *get_hostname(mac_addr_t *hw_addr);
 
 mac_addr_t *get_mac_address(char * hostname);
 
-uint8_t is_known_host(mac_addr_t hw_addr);
+uint8_t is_known_host(mac_addr_t *hw_addr);
+
+void print_hw_addr(mac_addr_t *hw_addr);
 
 #endif
 
