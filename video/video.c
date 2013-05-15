@@ -95,16 +95,16 @@ void _video_test2( void )
 		switch(ch)
 		{
 			case 115:
-				p1.y++; p2.y++;
+				p1.y+=2; p2.y+=2;
 				break;
 			case 97:
-				p1.x--; p2.y--;
+				p1.x-=2; p2.x-=2;
 				break;
 			case 119:
-				p1.y--; p2.y--;
+				p1.y-=2; p2.y-=2;
 				break;
 			case 100:
-				p1.x++; p2.x++;
+				p1.x+=2; p2.x+=2;
 				break;
 		}
 
