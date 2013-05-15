@@ -224,7 +224,7 @@ system.o: ./include/startup.h ./include/x86arch.h ./include/user.h
 system.o: ./include/ulib.h
 ulibc.o: ./include/common.h
 user.o: ./include/common.h ./include/user.h ./include/c_io.h
-user.o: ./include/shell.h ./include/8255x.h ./include/pci.h
+user.o: ./include/shell.h ./include/net.h ./include/8255x.h ./include/pci.h
 string.o: ./include/string.h ./include/common.h
 shell/shell.o: ./include/shell.h ./include/common.h ./include/string.h
 shell/ps.o: ./include/common.h
@@ -235,8 +235,8 @@ shell/echo.o: ./include/common.h
 shell/halt.o: ./include/common.h ./include/string.h ./include/shell.h
 shell/lspci.o: ./include/common.h ./include/string.h ./include/pci.h
 shell/test.o: ./include/disk.h ./include/common.h
-shell/hosts.o: ./include/common.h ./include/8255x.h ./include/pci.h
-shell/hosts.o: ./include/string.h
+shell/hosts.o: ./include/common.h ./include/string.h ./include/net.h
+shell/hosts.o: ./include/8255x.h ./include/pci.h
 pci/pci.o: ./include/common.h ./include/pci.h ./include/startup.h
 disk.o: ./include/common.h ./include/disk.h ./include/pci.h
 network/8255x.o: ./include/common.h ./include/startup.h ./include/support.h
@@ -244,5 +244,5 @@ network/8255x.o: ./include/8255x.h ./include/pci.h ./include/net_handler.h
 network/net_handler.o: ./include/common.h ./include/x86arch.h
 network/net_handler.o: ./include/startup.h ./include/pci.h ./include/8255x.h
 network/net_handler.o: ./include/net_handler.h
-network/net.o: ./include/common.h ./include/net.h ./include/8255x.h
-network/net.o: ./include/pci.h
+network/net.o: ./include/common.h ./include/string.h ./include/net.h
+network/net.o: ./include/8255x.h ./include/pci.h

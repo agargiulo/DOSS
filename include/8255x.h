@@ -52,6 +52,7 @@
  * Control / Status Register Offsets
  */
 #define E_CSR_SCB_STAT_WORD     0x00    /* 2 Bytes */
+// STAT_ACK is the upper byte of the STAT_WORD
 #define E_CSR_SCB_STAT_ACK      0x01    /* 1 Byte  */
 #define E_CSR_SCB_COM_WORD      0x02    /* 2 Bytes */
 #define E_CSR_SCB_GEN_PTR       0x04    /* 4 Bytes */
