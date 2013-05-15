@@ -74,6 +74,6 @@ void run_hosts(int argc, char *argv[])
 		c_puts("   Hostname    |    MAC Address    |  Seen?\n");
 		c_printf(" %8s.dsl... | ", hostname);
 		print_hw_addr(hw_addr);
-		c_printf(" | %s \n", ((memcmp(&eth0.hw_addr, &hw_addr, sizeof(mac_addr_t)) == 0) ? "yes" : "no" ));
+		c_printf(" | %s \n", ((memcmp(&eth0.hw_addr, hw_addr, sizeof(mac_addr_t)) == 0) ? "yes" : "no" ));
 	}
 }

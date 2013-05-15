@@ -64,6 +64,18 @@ void _net_handler(int vector, int code)
 	if ((SCB_STAT_ACK_Byte & SCB_STAT_FR) != 0)
 	{
 		c_puts("Frame recieved\n");
+
+		e100_rx_buf_t *rx_buffer = eth0.rx_buf_ptr;
+		while (rx_buffer->header.stat != 0)
+		{
+			if (rx_buffer->header.link_offset == (uint32_t) eth0.rx_buf_ptr)
+			{
+				break;
+			}
+
+			eth0.rx_count++;
+		}
+
 		__outb(eth0.CSR_BAR + E_CSR_SCB_STAT_ACK, SCB_STAT_FR);
 	}
 	if ((SCB_STAT_ACK_Byte & SCB_STAT_CNA) != 0)

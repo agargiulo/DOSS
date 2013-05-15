@@ -82,7 +82,7 @@ void _net_init(void)
 	__outl(eth0.CSR_BAR + E_CSR_PORT, 0);
 	__delay(100);
 
-	__outb(eth0.CSR_BAR + E_CSR_SCB_COM_WORD + 1, 0x02);
+	//__outb(eth0.CSR_BAR + E_CSR_SCB_COM_WORD + 1, 0x02);
 	c_puts(" network\n");
 
 
