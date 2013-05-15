@@ -489,11 +489,11 @@ void _disk_init( void ) {
 				
 				// Select drive
 				ide_write(j, ATA_REG_HDDEVSEL, 0xA0 | ( k << 4 ));
-				__delay(1);
+				__delay(100);
 				
 				// Send identify command
 				ide_write(j, ATA_REG_COMMAND, CMD_IDENTIFY_DEVICE);
-				__delay(1);
+				__delay(100);
 				
 				// if status is 0, no device
 				if ( ide_read( j, ATA_REG_STATUS ) == 0 ) {
