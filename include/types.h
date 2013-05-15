@@ -52,7 +52,7 @@ typedef uint32_t	ulong_t;
 typedef long long	uint64_t;
 
 #ifndef MIXED_INCLUDES
-typedef uint16_t	size_t;
+typedef uint32_t	size_t;
 #endif
 
 // system call status return

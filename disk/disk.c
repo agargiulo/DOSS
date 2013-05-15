@@ -11,7 +11,6 @@
 
 #define	__SP2_KERNEL__
 
-#include <common.h>
 #include <disk.h>
 #include <pci.h>
 #include <startup.h>
@@ -219,17 +218,11 @@ uint8_t ide_buffer[2048];
 */
 
 void ide_isr( int vec, int code ) {
-	
-	
-// 	c_printf("isr %x\n", vec );
-	if ( vec == 0x2e )
-		__outb( PIC_MASTER_CMD_PORT, PIC_EOI );
-	else if ( vec == 0x23 )
-		__outb( PIC_SLAVE_CMD_PORT, PIC_EOI );
+	__outb( PIC_MASTER_CMD_PORT, PIC_EOI );
+	__outb( PIC_SLAVE_CMD_PORT, PIC_EOI );
 }
 
 void ide_write( uint8_t channel, uint8_t reg, const uint8_t data ) {
-// 	c_printf("writing %x %x\n", channels[channel].base + reg, data);
 	
 	if (reg > 0x07 && reg < 0x0C)
 		ide_write(channel, ATA_REG_CONTROL, 0x82);
@@ -243,13 +236,10 @@ void ide_write( uint8_t channel, uint8_t reg, const uint8_t data ) {
 		__outb(channels[channel].bmide + reg - 0x0E, data);
 	if (reg > 0x07 && reg < 0x0C)
 		ide_write(channel, ATA_REG_CONTROL, 2);
-// 	c_printf("done write\n");
 }
 
 uint8_t ide_read( uint8_t channel, uint8_t reg ) {
 	uint8_t result;
-	//c_printf("reading %x\n", channels[channel].base + reg);
-	
 	
 	if (reg > 0x07 && reg < 0x0C)
 		ide_write(channel, ATA_REG_CONTROL, 0x82);
@@ -264,12 +254,10 @@ uint8_t ide_read( uint8_t channel, uint8_t reg ) {
 	if (reg > 0x07 && reg < 0x0C)
 		ide_write(channel, ATA_REG_CONTROL, 2);
 	
-	//c_printf("read %x %x\n", channels[channel].base + reg, result);
-	
 	return result;
 }
 
-
+// Copied from OSdev wiki
 uint8_t ide_polling(uint8_t channel, uint32_t advanced_check) {
  
    // (I) Delay 400 nanosecond for BSY to be set:
@@ -307,11 +295,11 @@ uint8_t ide_polling(uint8_t channel, uint32_t advanced_check) {
  
 }
 
-void pio_lba28_write( struct ide_device *device, uint32_t sector, const uint8_t *buffer, size_t n ) {
+void pio_lba28_write( struct ide_device *device, uint32_t sector, const uint8_t *buffer, size_t nbytes ) {
 	uint8_t status;
 	int i;
-	
-// 	turn off interrupts
+// 	c_printf("write called\n");
+	// turn off interrupts
 	ide_write( device->channel, ATA_REG_CONTROL, 2 );
 	
 	//wait for the drive to not be busy
@@ -326,28 +314,28 @@ void pio_lba28_write( struct ide_device *device, uint32_t sector, const uint8_t 
 	
 	// write lba data to upper, then lower
 	ide_write( device->channel, 0x1, 0 );
+	ide_write( device->channel, ATA_REG_SECCOUNT1, 0 );
+	ide_write( device->channel, ATA_REG_LBA3, ( sector & 0xFF000000 ) >> 24 );
+	ide_write( device->channel, ATA_REG_LBA4, 0 );
+	ide_write( device->channel, ATA_REG_LBA5, 0 );
 	ide_write( device->channel, ATA_REG_SECCOUNT0, 1 );
-// 	ide_write( device->channel, ATA_REG_LBA3, ( sector & 0xFF000000 ) >> 24 );
-// 	ide_write( device->channel, ATA_REG_LBA4, 0 );
-// 	ide_write( device->channel, ATA_REG_LBA5, 0 );
-// 	ide_write( device->channel, ATA_REG_SECCOUNT0, 1 );
-	ide_write( device->channel, ATA_REG_LBA0, (uint8_t) sector );
-	ide_write( device->channel, ATA_REG_LBA1, (uint8_t) (sector >> 8) );
-	ide_write( device->channel, ATA_REG_LBA2, (uint8_t) (sector >> 16) );
-	
+	ide_write( device->channel, ATA_REG_LBA0, (sector & 0xFF) );
+	ide_write( device->channel, ATA_REG_LBA1, ((sector & 0xFF00) >> 8) );
+	ide_write( device->channel, ATA_REG_LBA2, ((sector & 0xFF0000) >> 16) );
 	
 	
 	// send command
 	ide_write( device->channel, ATA_REG_COMMAND, CMD_WRITE_SECTORS_EXT );
+	
+// 	c_printf("writing at %d\n", sector);
 	
 	uint16_t *buf = (uint16_t*)buffer;
 	
  	status = ide_polling( device->channel, 1 );
 	while ( !(ide_read( device->channel, ATA_REG_STATUS) & 0x08) );
  	if ( !status ) {
-// 		c_printf("writing data\n");
-		
-		int towrite = ((n/2)+1);
+		// If it's an odd number of bytes, we must write an extra zero
+		int towrite = nbytes % 2 == 1 ? (nbytes + 1)/2: nbytes/2;
 		int zeroes = (256 - towrite);
 		for ( i = 0; i < towrite; ++i ) {
 			__outw( channels[device->channel].base, buf[i] );
@@ -358,17 +346,20 @@ void pio_lba28_write( struct ide_device *device, uint32_t sector, const uint8_t 
 		}
  	}
  	else {
-		c_printf("device busy\n");
+		c_printf("device busy, write failed\n");
 	}
 	
+	//c_printf("write complete\n");
 }
 
-void pio_lba28_read( struct ide_device *device, uint32_t sector, uint8_t *buffer, size_t n ) {
+void pio_lba28_read( struct ide_device *device, uint32_t sector, uint8_t *buffer, size_t nbytes ) {
 	uint8_t status;
 	int i;
 	
+	
+	//c_printf("read called\n");
 	// turn off interrupts
-	ide_write( device->channel, ATA_REG_CONTROL, 2 );
+	ide_write( device->channel, ATA_REG_CONTROL, 0x02 );
 	
 	//wait for the drive to not be busy
 	
@@ -382,40 +373,43 @@ void pio_lba28_read( struct ide_device *device, uint32_t sector, uint8_t *buffer
 	
 	// write lba data to upper, then lower
 	ide_write( device->channel, ATA_REG_FEATURES, 0 );
+	ide_write( device->channel, ATA_REG_SECCOUNT1, 1 );
+	ide_write( device->channel, ATA_REG_LBA3, ( sector & 0xFF000000 ) >> 24 );
+	ide_write( device->channel, ATA_REG_LBA4, 0 );
+	ide_write( device->channel, ATA_REG_LBA5, 0 );
 	ide_write( device->channel, ATA_REG_SECCOUNT0, 1 );
-//	ide_write( device->channel, ATA_REG_LBA3, ( sector & 0xFF000000 ) >> 24 );
-//	ide_write( device->channel, ATA_REG_LBA4, 0 );
-//	ide_write( device->channel, ATA_REG_LBA5, 0 );
-//	ide_write( device->channel, ATA_REG_SECCOUNT0, 1 );
-	ide_write( device->channel, ATA_REG_LBA0, (uint8_t) sector );
-	ide_write( device->channel, ATA_REG_LBA1, (uint8_t) (sector >> 8) );
-	ide_write( device->channel, ATA_REG_LBA2, (uint8_t) (sector >> 16) );
+	ide_write( device->channel, ATA_REG_LBA0, (sector & 0xFF) );
+	ide_write( device->channel, ATA_REG_LBA1, ((sector & 0xFF00) >> 8) );
+	ide_write( device->channel, ATA_REG_LBA2, ((sector & 0xFF0000) >> 16) );
 	
 	
 	// send command
 	ide_write( device->channel, ATA_REG_COMMAND, CMD_READ_SECTORS_EXT );
 	
+// 	c_printf("reading at %d\n", sector);
+	
 	status = ide_polling( device->channel, 1 );
 	while ( !(ide_read( device->channel, ATA_REG_STATUS) & 0x08) );
 	if ( !status ) {
-// 		c_printf("reading data\n");
 		uint16_t temp;
-		int towrite = ((n/2)+1);
-		int zeroes = 256 - towrite;
-		for ( i = 0; i < towrite; ++i ) {
+		int toread = nbytes % 2 == 1 ? (nbytes + 1)/2: nbytes/2;
+		int zeroes = 256 - toread;
+		for ( i = 0; i < toread; ++i ) {
 			temp = __inw( channels[device->channel].base );
 			(buffer)[2*i] = (uint8_t)temp;
 			(buffer)[(2*i)+1] = (uint8_t)(temp >> 8);
-			//c_printf("%x ", temp);
 		}
 		for ( i = 0; i < zeroes; ++i ) {
 			__inw( channels[device->channel].base );
+			(buffer)[2*i] = 0x00;
+			(buffer)[(2*i)+1] = 0x00;
 		}
  	}
  	else {
-		c_printf("device busy");
+		c_printf("device busy, read failed");
 	}
 	
+	//c_printf("read complete\n");
 }
 
 
@@ -467,10 +461,11 @@ void _disk_init( void ) {
 	// Look for IDE controllers in device tab
 	for ( i = 0; i < device_count; ++i ) {
 		device_t *dev = &device_tab[i];
-		// If it's an IDE controller
+		// If it's an storage controller
 		if ( dev->class == MASS_STORAGE ) {
-// 			c_printf("disk found\n");
 			
+			// Set base io, control, and bm registers
+			// Should be dynamically calculated
 			channels[ATA_PRIMARY].base = 0x1F0; //f0e0 //(dev->bar0 & 0xFFFFFFFC) + 0x1F0 * (!(dev->bar0));
 			channels[ATA_PRIMARY].ctrl = 0x3F4; //f0d0 //(dev->bar1 & 0xFFFFFFFC) + 0x3F4 * (!(dev->bar1));
 			channels[ATA_SECONDARY].base = 0x170; //f0c0 //(dev->bar2 & 0xFFFFFFFC) + 0x170 * (!(dev->bar2));
@@ -486,28 +481,26 @@ void _disk_init( void ) {
 			for ( j = 0; j < 2; ++j ) {
 			// Check devices on this channel
 			for ( k = 0; k < 2; ++k ) {
-// 				c_printf("k loop\n");
 				uint8_t error = 0;
 				uint8_t type = IDE_ATA;
 				uint8_t status;
 				
 				ide_devices[ide_device_count].reserved = 0;
-// 				c_printf("1\n");
+				
 				// Select drive
 				ide_write(j, ATA_REG_HDDEVSEL, 0xA0 | ( k << 4 ));
-				
 				__delay(1);
-// 				c_printf("2\n");
+				
 				// Send identify command
 				ide_write(j, ATA_REG_COMMAND, CMD_IDENTIFY_DEVICE);
-				
 				__delay(1);
-// 				c_printf("3\n");
+				
 				// if status is 0, no device
 				if ( ide_read( j, ATA_REG_STATUS ) == 0 ) {
 					continue;
 				}
-// 				c_printf("device exists %d %d\n", j, k );
+				
+				
 				while ( 1 ) {
 					status = ide_read( j, ATA_REG_STATUS );
 					
@@ -523,6 +516,7 @@ void _disk_init( void ) {
 					}
 				}
 				
+				// If there is an error, it means the device is not ATA
 				if ( error != 0 ) {
 					continue;
 					uint8_t low = ide_read(j, ATA_REG_LBA1);
@@ -542,8 +536,8 @@ void _disk_init( void ) {
 				ide_read_buffer32( j, ATA_REG_DATA, (uint32_t*)ide_buffer, 128 );
 				
 				// Drive is good, setting data
-				ide_devices[ide_device_count].reserved 	= 1;
-				ide_devices[ide_device_count].type 		= type;
+				ide_devices[ide_device_count].reserved		= 1;
+				ide_devices[ide_device_count].type		= type;
 				ide_devices[ide_device_count].channel	 	= j;
 				ide_devices[ide_device_count].drive		= k;
 				ide_devices[ide_device_count].signature	= *((uint16_t*)(ide_buffer+ATA_IDENT_DEVICETYPE));
@@ -555,11 +549,12 @@ void _disk_init( void ) {
 					ide_devices[ide_device_count].size = 
 						*((unsigned int *)(ide_buffer + ATA_IDENT_MAX_LBA_EXT));
 				} else {
-					// chs or 28 bit addressing
+					// CHS or 28 bit addressing
 					ide_devices[ide_device_count].size = 
 						*((unsigned int *)(ide_buffer + ATA_IDENT_MAX_LBA));
 				}
 				
+				// Copy model string
 				for ( m = 0; m < 40; m+=2 ) {
 					ide_devices[ide_device_count].model[m] = ide_buffer[ATA_IDENT_MODEL + m + 1];
 					ide_devices[ide_device_count].model[m+1] = ide_buffer[ATA_IDENT_MODEL + m];
@@ -569,17 +564,14 @@ void _disk_init( void ) {
 				
 				++ide_device_count;
 				
-			} 
-			// End channel->device check
+			} // End channel->device check
 				
-			} 
-			// End channel check
+			} // End channel check
 			break; // Stop looking after PATA controller found
 		}
 		// else not storage, ignore
 	}
 	// Done devices
-// 	c_printf("done disk\n");
 	
 }
 
@@ -592,6 +584,9 @@ void print_devices() {
 				(const char *[]){"ATA", "ATAPI"}[ide_devices[i].type],
 				ide_devices[i].size / 1024 / 1024 / 2,
 				ide_devices[i].model);
+			c_printf("     Signature: %04x\n", ide_devices[i].signature );
+			c_printf("     Capabilities: %04x\n", ide_devices[i].capabilities);
+			c_printf("     CommandSets: %08x\n", ide_devices[i].commandSets );
 		}
 	}
 }
@@ -603,14 +598,6 @@ status_t disk_read( uint32_t sector, uint8_t *buffer, size_t n ) {
 
 status_t read_sector( uint32_t sector, uint8_t *buffer ) {
 	return disk_read( sector, buffer, 512 );
-}
-
-// status_t disk_read( uint64_t start, uint64_t stop, uint8_t *buffer ) {
-// 	return 0;
-// }
-
-void read_bytes( uint64_t start, size_t nbytes, uint8_t *buffer ) {
-	
 }
 
 status_t disk_write( uint32_t sector, const uint8_t *buffer, size_t n ) {
