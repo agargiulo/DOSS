@@ -14,7 +14,7 @@ U_C_SRC = clock.c klibc.c process.c queue.c scheduler.c sio.c \
 	disk/disk.c ofs.c video/video.c video/vga.c network/8255x.c \
 	network/net_handler.c network/net.c qalloc.c shell/stat.c shell/mount.c \
 	shell/lsblk.c shell/ls.c shell/touch.c shell/cat.c shell/df.c shell/append.c \
-	shell/videotest.c
+	shell/videotest.c shell/systime.c shell/rm.c
 
 U_C_OBJ = clock.o klibc.o process.o queue.o scheduler.o sio.o \
 	stack.o syscall.o system.o ulibc.o user.o string.o shell/shell.o \
@@ -23,7 +23,7 @@ U_C_OBJ = clock.o klibc.o process.o queue.o scheduler.o sio.o \
 	disk/disk.o ofs.o video/video.o video/vga.o network/8255x.o \
 	network/net_handler.o network/net.o qalloc.o shell/stat.o shell/mount.o \
 	shell/lsblk.o shell/ls.o shell/touch.o shell/cat.o shell/df.o shell/append.o \
-	shell/videotest.o
+	shell/videotest.o shell/systime.o shell/rm.o
 
 U_S_SRC = klibs.S ulibs.S video/video_s.s
 U_S_OBJ = klibs.o ulibs.o video/video_s.o

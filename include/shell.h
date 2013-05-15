@@ -50,6 +50,8 @@ void run_append(int argc, char **argv);
 void run_stat(int argc, char **argv);
 void run_mount(int argc, char **argv);
 void run_videotest(int argc, char **argv);
+void run_systime(int argc, char **argv);
+void run_rm(int argc, char **argv);
 
 // Write a message to both the serial terminal and the console
 void wall_s(char *message);
