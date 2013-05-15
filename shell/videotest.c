@@ -37,5 +37,5 @@
 
 void run_videotest( int argc, char **argv )
 {
-	_video_test();
+	_video_test2();
 }

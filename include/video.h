@@ -64,6 +64,7 @@ typedef struct video_object
 ** Globals
 */
 
+extern video_object demobox;
 extern queue_t video_refresh;
 
 /*
@@ -74,12 +75,15 @@ int abs(int num);
 
 void _video_init( void );
 void _video_test( void );
+void _video_test2( void );
 
+void _video_clear( void );
 void _video_point(int x, int y, enum Color c);
 void _video_line(point *p1, point *p2, enum Color c);
 void _video_box(point *p1, point *p2, enum Color c);
 void _video_box_filled(point *p1, point *p2, enum Color c);
 
+void _video_redraw( void );
 void _video_sync( void );
 
 void _video_obj_move(video_object *obj, point *topleft);
