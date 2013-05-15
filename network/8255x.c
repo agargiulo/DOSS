@@ -30,7 +30,7 @@ e100_cmd_dump_t dump;
 /*
  * PUBLIC GLOBAL VARIABLES
  */
-volatile e100_device_t eth0;
+e100_device_t eth0;
 
 /*
  * PRIVATE FUNCTIONS

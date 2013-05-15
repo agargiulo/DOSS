@@ -7,8 +7,8 @@
 */
 
 #include <common.h>
-#include <8255x.h>
 #include <string.h>
+#include <net.h>
 
 /*
 ** PRIVATE DEFINITIONS
@@ -50,5 +50,9 @@ void run_hosts(int argc, char *argv[])
 		c_puts("-l : prints information about this machine\n");
 		c_puts("<hostname> : prints information about the given hostname\n");
 		return;
+	}
+	else if (strcmp(argv[1], "-l") == 0)
+	{
+		c_printf("Hostname: %s\n", get_hostname(eth0.hw_addr));
 	}
 }

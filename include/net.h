@@ -26,7 +26,14 @@
 /*
 ** Types
 */
+typedef struct host_map
+{
+	mac_addr_t hw_addr;
+	char *hostname;
+} host_map_t;
 
+extern host_map_t host_list[];
+extern uint8_t num_known_hosts;
 /*
 ** Globals
 */
@@ -34,7 +41,11 @@
 /*
 ** Prototypes
 */
+char *get_hostname(mac_addr_t hw_addr);
 
+mac_addr_t *get_mac_address(char * hostname);
+
+uint8_t is_known_host(mac_addr_t hw_addr);
 
 #endif
 
