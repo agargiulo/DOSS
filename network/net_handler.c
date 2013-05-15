@@ -43,16 +43,11 @@ static int first_interrupt = 1;
 
 void _net_handler(int vector, int code)
 {
-
 	if (first_interrupt)
 	{
 		first_interrupt = 0;
 		__outb( PIC_MASTER_CMD_PORT, PIC_EOI );
-		if( vector >= 0x28 && vector <= 0x2f )
-		{
-			__outb( PIC_SLAVE_CMD_PORT, PIC_EOI );
-		}
-		_net_complete_init();
+		__outb( PIC_SLAVE_CMD_PORT, PIC_EOI );
 		return;
 	}
 

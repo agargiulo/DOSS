@@ -18,6 +18,9 @@
 
 #include <shell.h>
 
+// Don't worry about this...
+#include <8255x.h>
+
 /*
 ** USER PROCESSES
 **
@@ -848,6 +851,7 @@ void idle( void ) {
 */
 
 void init( void ) {
+	_net_complete_init();
 	int pid;
 	pid_t upid;
 	ustatus_t status;
