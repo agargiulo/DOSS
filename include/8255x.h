@@ -152,8 +152,9 @@
  * Types
  */
 #define MAC_ADDR_LEN            6       /* 6 bytes in a MAC Address */
-#define FRAME_DAT_LEN           1500    /* Max bytes in an ethernet frame data area*/
+#define FRAME_DAT_LEN           1496    /* Max bytes in an ethernet frame data area*/
 #define FRAME_HEAD_LEN          14      /* Bytes in an ethernet header */
+#define E100_NUM_RX_BUFS        5       /* because I had to pick something */
 
 /*
  * A MAC address
@@ -168,7 +169,7 @@ typedef struct e100_cmd_header
 	uint16_t stat;
 	uint16_t cmd;
 	uint32_t link_offset;
-} e100_cmd_header_t;
+}  __attribute__((__packed__))e100_cmd_header_t;
 
 /*
  * Used by the dump command
@@ -179,7 +180,7 @@ typedef struct e100_cmd_dump
 	e100_cmd_header_t header;
 	uint32_t buff_addr;
 	uint8_t buffer[596];
-} e100_cmd_dump_t;
+} __attribute__((__packed__)) e100_cmd_dump_t;
 
 typedef struct e100_rx_buf
 {
@@ -210,7 +211,16 @@ typedef struct e100_device
 	device_t *pci;
 	uint32_t CSR_BAR;
 	mac_addr_t hw_addr;
+
+	e100_rx_buf_t *rx_buf_base;
+	e100_rx_buf_t *rx_buf_ptr;
+	e100_rx_buf_t *rx_buf_end;
+
+	e100_tx_buf_t *tx_buf_base;
+
 	uint8_t CU_finished;
+	uint32_t rx_count;
+
 } e100_device_t;
 
 /*
@@ -232,6 +242,8 @@ void _net_init(void);
  * called from within the ISR after the first interrupt.
  */
 void _net_complete_init(void);
+
+void _net_init_rx_frame_area(void);
 
 /*
  * Print out various debugging information

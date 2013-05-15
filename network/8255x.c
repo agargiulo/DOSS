@@ -126,8 +126,49 @@ void _net_complete_init( void )
 		c_puts("\nError: dump command did not finish\n");
 		return;
 	}
+
+	_net_init_rx_frame_area();
+
+	__delay(2000);
+
+	e100_tx_buf_t tx_buf;
+	_kmemclr((byte_t *) &tx_buf, sizeof(tx_buf));
+	eth0.tx_buf_base = &tx_buf;
+
+	__outl(eth0.CSR_BAR + E_CSR_SCB_GEN_PTR, (uint32_t) eth0.tx_buf_base);
+	__outb(eth0.CSR_BAR + E_CSR_SCB_COM_WORD, SCB_RCMD_RU_START);
+	nic_wait();
 }
 
+void _net_init_rx_frame_area(void)
+{
+	static e100_rx_buf_t *first_buffer = NULL;
+	static e100_rx_buf_t *last_buffer = NULL;
+
+	for (int i = 0; i < E100_NUM_RX_BUFS; i++)
+	{
+		static e100_rx_buf_t rx_buffer;
+		_kmemclr((byte_t *) &rx_buffer, sizeof(e100_rx_buf_t));
+		rx_buffer.size = FRAME_DAT_LEN;
+
+		if (last_buffer != NULL)
+		{
+			last_buffer->header.link_offset = (uint32_t) &rx_buffer;
+		}
+		if (first_buffer == NULL)
+		{
+			first_buffer = &rx_buffer;
+		}
+
+		last_buffer = &rx_buffer;
+	}
+	last_buffer->header.link_offset = (uint32_t) first_buffer;
+	last_buffer->header.cmd = ACT_CMD_EL | ACT_CMD_S;
+
+	eth0.rx_buf_base = first_buffer;
+	eth0.rx_buf_ptr = first_buffer;
+	eth0.rx_buf_end = last_buffer;
+}
 
 void nic_wait( void )
 {
