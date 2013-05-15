@@ -163,6 +163,23 @@
 typedef uint8_t mac_addr_t[MAC_ADDR_LEN];
 
 /*
+ * Ethernet frames and all that jazz
+ */
+typedef struct ether_header
+{
+	mac_addr_t dest;
+	mac_addr_t src;
+	uint16_t protocol;
+} __attribute__((__packed__)) ether_header_t;
+
+typedef struct ether_frame
+{
+	ether_header_t eth_head;
+	uint8_t data[FRAME_DAT_LEN];
+} __attribute__((__packed__)) ether_frame_t;
+
+
+/*
  * The default structure that the card will use for commands sent to it
  */
 typedef struct e100_cmd_header
@@ -245,6 +262,8 @@ void _net_init(void);
 void _net_complete_init(void);
 
 void _net_init_rx_frame_area(void);
+void _net_init_rxb(e100_rx_buf_t *rx_buffer);
+void e100_tx (uint8_t *tx_data, uint16_t data_size);
 
 /*
  * Print out various debugging information
@@ -265,6 +284,12 @@ void nic_wait(void);
 uint8_t eth_pci_readb (uint8_t reg);
 uint16_t eth_pci_read (uint8_t reg);
 uint32_t eth_pci_readl (uint8_t reg);
+
+
+uint32_t htonl(uint32_t hlong);
+uint16_t htons(uint16_t hshort);
+uint32_t ntohl(uint32_t nlong);
+uint16_t ntohs(uint16_t nshort);
 
 #endif // __SP2_ASM__
 
