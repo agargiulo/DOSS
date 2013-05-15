@@ -152,6 +152,8 @@
  * Types
  */
 #define MAC_ADDR_LEN            6       /* 6 bytes in a MAC Address */
+#define FRAME_DAT_LEN           1500    /* Max bytes in an ethernet frame data area*/
+#define FRAME_HEAD_LEN          14      /* Bytes in an ethernet header */
 
 /*
  * A MAC address
@@ -178,6 +180,26 @@ typedef struct e100_cmd_dump
 	uint32_t buff_addr;
 	uint8_t buffer[596];
 } e100_cmd_dump_t;
+
+typedef struct e100_rx_buf
+{
+	e100_cmd_header_t header;
+
+	uint32_t reserved;
+	uint16_t true_count;
+	uint16_t size;
+	uint8_t frame[FRAME_DAT_LEN + FRAME_HEAD_LEN];
+} __attribute__((__packed__)) e100_rx_buf_t;
+
+typedef struct e100_tx_buf
+{
+	e100_cmd_header_t header;
+
+	uint32_t tbda_addr;
+	uint16_t tx_cb_byte_count;
+	uint8_t tx_thresh;
+	uint8_t tbs_number;
+} __attribute__((__packed__)) e100_tx_buf_t;
 
 /*
  * All of the information about the network card

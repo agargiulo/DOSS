@@ -5,7 +5,7 @@
 **
 ** Author:	4003-506 class of 20123
 **
-** Contributor:
+** Contributor: Anthony Gargiulo, Owen Royall-Kahin
 **
 ** Description:	User routines.
 */
@@ -18,8 +18,8 @@
 
 #include <shell.h>
 
-// Don't worry about this...
-#include <8255x.h>
+// Don't worry about this... -- agargiulo
+#include <net.h>
 
 /*
 ** USER PROCESSES
@@ -851,7 +851,9 @@ void idle( void ) {
 */
 
 void init( void ) {
+	// Don't worry about this... -- agargiulo
 	_net_complete_init();
+
 	int pid;
 	pid_t upid;
 	ustatus_t status;
