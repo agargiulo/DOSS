@@ -35,7 +35,7 @@ typedef struct shell_cmd {
 
 char *ps1 = "C:\\Users\\team1>";
 
-int command_count = 16;
+int command_count = 18;
 shell_cmd command_tab[] = {
 	{"ps", run_ps},
 	{"clear", run_clear},
@@ -46,6 +46,7 @@ shell_cmd command_tab[] = {
 	{"test", run_test},
 	{"halt", run_halt},
 	{"lsblk", run_lsblk},
+	{"systime", run_systime},
 	
 	{"ls", run_ls},
 	{"touch", run_touch},
@@ -53,7 +54,8 @@ shell_cmd command_tab[] = {
 	{"df", run_df},
 	{"append", run_append},
 	{"stat", run_stat},
-	{"mount", run_mount}
+	{"mount", run_mount},
+	{"rm", run_rm}
 };
 
 char buffer[INPUT_LEN];

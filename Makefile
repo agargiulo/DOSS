@@ -12,14 +12,14 @@ U_C_SRC = clock.c klibc.c process.c queue.c scheduler.c sio.c \
 	shell/ps.c shell/clear.c shell/help.c shell/reboot.c shell/echo.c \
 	shell/halt.c shell/lspci.c pci/pci.c shell/test.c disk/disk.c ofs.c \
 	shell/lsblk.c shell/ls.c shell/touch.c shell/cat.c shell/df.c shell/append.c \
-	qalloc.c shell/stat.c shell/mount.c
+	qalloc.c shell/stat.c shell/mount.c shell/systime.c shell/rm.c
 
 U_C_OBJ = clock.o klibc.o process.o queue.o scheduler.o sio.o \
 	stack.o syscall.o system.o ulibc.o user.o string.o shell/shell.o \
 	shell/ps.o shell/clear.o shell/help.o shell/reboot.o shell/echo.o \
 	shell/halt.o shell/lspci.o shell/test.o pci/pci.o disk/disk.o ofs.o \
 	shell/lsblk.o shell/ls.o shell/touch.o shell/cat.o shell/df.o shell/append.o \
-	qalloc.o shell/stat.o shell/mount.o
+	qalloc.o shell/stat.o shell/mount.o shell/systime.o shell/rm.o
 
 U_S_SRC = klibs.S ulibs.S
 U_S_OBJ = klibs.o ulibs.o

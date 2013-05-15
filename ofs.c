@@ -25,7 +25,7 @@
 #define	SEC_IN_CLUSTER	32
 #define	SECTOR_SIZE	512
 #define	CLUSTER_SIZE	( SEC_IN_CLUSTER * SECTOR_SIZE )
-#define	CLUSTER_COUNT	5000
+#define	CLUSTER_COUNT	CLUSTER_SIZE
 #define	FS_SIZE		( CLUSTER_COUNT * CLUSTER_SIZE )
 
 #define DIR_TABLE_SIZE ( CLUSTER_SIZE/sizeof(dt_entry_t) )
@@ -60,13 +60,11 @@ dt_entry_t	dir_table[CLUSTER_SIZE];
 // Global buffer for cluster operations
 uint8_t		cluster_buffer[CLUSTER_SIZE];
 
-// uint32_t	fat_indicies[4];
 static uint32_t		current_fat;
-// uint32_t	dt_indicies[4];
 static uint32_t		current_dt;
 
 // Global status 
-status_t	status;
+static status_t		status;
 
 
 /*
@@ -111,7 +109,7 @@ void clear_buffer( void ) {
 status_t update_fat( void ) {
 	// Copy fat to our buffer
 	memcpy( cluster_buffer, fat, CLUSTER_COUNT );
-	c_printf("fat: %d\n", current_fat);
+	
 	// need to fill the rest with zeroes
 	//memset( cluster_buffer+sizeof(fat), 0x00, CLUSTER_SIZE-CLUSTER_COUNT );
 	
@@ -122,7 +120,9 @@ status_t update_fat( void ) {
 		return status;
 	}
 		
-	clear_buffer();
+// 	clear_buffer();
+	
+	
 	return status;
 }
 
@@ -140,16 +140,16 @@ status_t load_fat( void ) {
 // Function for rewriting the Directory Table to disk. Clears the global buffer.
 status_t update_dt( void ) {
 	// Copy dt to our buffer
-	memcpy( cluster_buffer, dir_table, CLUSTER_SIZE );	
+	memcpy( cluster_buffer, dir_table, CLUSTER_SIZE );
+	
 	// write it
-	c_printf("dt: %d\n", current_dt);
 	status = write_cluster( current_dt );
 	if (status) {
 		c_printf("Error updating DT\n");
 		return status;
 	}
-		
-	//clear_buffer();
+	
+// 	clear_buffer();
 	return status;
 }
 
@@ -160,7 +160,7 @@ status_t load_dt( void ) {
 		c_printf("Error loading DT\n");
 		return status;
 	}
-	memcpy( dir_table, cluster_buffer, DIR_TABLE_SIZE );
+	memcpy( dir_table, cluster_buffer, CLUSTER_SIZE );
 	return status;
 }
 
@@ -422,24 +422,29 @@ void _fs_init( void ) {
 }
 
 file_t * fcreat( char * name ) {
+	int dti;
 	int newfd = get_free_fd();
 	if ( newfd != -1 ) {
-		int dti = get_free_dti();
-		if ( dti != -1 ) {
-// 			// Create a DT entry
-			strncpy( dir_table[dti].name, name, 112 );
-			dir_table[dti].size = 0;
-			dir_table[dti].type = 0xFFFFFFFF;
-			dir_table[dti].time = _system_time;
-			
-			uint32_t fi = get_free_fat();
-			dir_table[dti].index = fi;
-			fat[fi] = 0xFFFFFFFF;
-			
-			update_dt();
-			update_fat();
-// 			
-// 			return fopen( name );
+		dti = find_in_dt( name );
+		if ( dti == -1 ) {
+			// File does not exist, lets try:
+			dti = get_free_dti();
+			if ( dti != -1 ) {
+	// 			// Create a DT entry
+				strncpy( dir_table[dti].name, name, 112 );
+				dir_table[dti].size = 0;
+				dir_table[dti].type = 0xFFFFFFFF;
+				dir_table[dti].time = _system_time;
+				
+				uint32_t fi = get_free_fat();
+				dir_table[dti].index = fi;
+				fat[fi] = 0xFFFFFFFF;
+				
+				update_dt();
+				update_fat();
+	// 			
+	// 			return fopen( name );
+			}
 		}
 	}
 	
@@ -550,8 +555,9 @@ void stat( char * filename ) {
 		c_printf(" File: %s\n", filename);
 		c_printf("    Size: %d\n", dir_table[dti].size );
 		c_printf("    Index: %d\n", dir_table[dti].index );
-		c_printf("    Time: %d\n", dir_table[dti].time );
-		c_printf("    Type: %d\n", dir_table[dti].type );
+		c_printf("    Time: %08x\n", dir_table[dti].time );
+		c_printf("    Type: %s\n", dir_table[dti].type == 0xFFFFFFFF 
+				? "File" : "Other");
 	}
 	
 }
@@ -564,5 +570,18 @@ void ls( void ) {
 			dir_table[i].name[0] != 0xFF) {
 			c_printf("%s\n", dir_table[i].name);
 		}
+	}
+}
+
+void rm( char * filename ) {
+	int dti = find_in_dt( filename );
+	
+	if ( dti != -1 ) {
+		c_printf("removing: %s\n", filename);
+		dir_table[dti].name[0] = 0x00;
+		clear_fat_chain( dir_table[dti].index );
+		
+		update_dt();
+		update_fat();
 	}
 }
