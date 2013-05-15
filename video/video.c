@@ -53,13 +53,16 @@ void _video_test( void )
 	c = YELLOW;
 	_video_box_filled(&p5, &p6, c);
 
-	sleep(1);
+	__delay(10);
+	_video_redraw();
 	for(i=0; i < 320*200; i++) vbuf[i] = 0;
-	sleep(1);
+	__delay(10);
+	_video_redraw();
 	
 	c = WHITE;
 	_video_box_filled(&p5, &p6, c);
-	//__delay(15);
+	__delay(10);
+	_video_redraw();
 
 	//Switch back to Text Mode
 	//__delay(10);
@@ -67,6 +70,40 @@ void _video_test( void )
 	//__delay(10);
 	//_video_setmode_text();
 
+}
+
+void _video_test2( void )
+{
+	_video_setmode_13();
+	_video_clear();
+	point p1 = {0,0};
+	point p2 = {10,10};
+	point oldp1 = p1;
+	point oldp2 = p2;
+	Color c = WHITE;
+
+	for(;;)
+	{
+		_video_box_filled(&oldp1, &oldp2, 0);
+		_video_box_filled(&p1, &p2, c);
+		_video_redraw();
+		sleep(0);
+		oldp1 = p1; oldp2 = p2;
+		p1.x++; p2.x++;
+		if(p2.x >= 320)
+		{
+			p1.x = 0;
+			p2.x = 10;
+			p1.y += 10;
+			p2.y += 10;
+
+			if(p2.y >= 200)
+			{
+				p1.y = 0;
+				p2.y = 10;
+			}
+		}
+	}
 }
 
 void _video_point(int x, int y, enum Color c)
@@ -82,6 +119,12 @@ int abs(int num)
 {
 	if (num < 0) return num * -1;
 	else return num;
+}
+
+void _video_clear( void )
+{
+	for(int i = 0; i < 320*200; i++) vbuf[i] = 0;
+	_video_redraw();
 }
 
 //Line algorithm courtesy Owen Royall-Kahin
@@ -159,18 +202,19 @@ void _video_box_filled(point *p1, point *p2, enum Color c)
 	}
 }
 
-void _video_sync()
+void _video_redraw()
 {
 	unsigned char *vmem = (unsigned char*) 0xa0000;
+	for(int i = 0; i < 64000; i++) vmem[i] = vbuf[i];
+}
 
+void _video_sync()
+{
 	for(;;)
 	{
-		for(int i = 0; i < 64000; i++)
-		{
-			vmem[i] = vbuf[i];
-		}
+		//_video_redraw();
 
-		sleep(0);
+		sleep(99999);
 	}
 }
 
