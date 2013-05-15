@@ -131,11 +131,12 @@ void _net_complete_init( void )
 
 	__delay(2000);
 
-	e100_tx_buf_t tx_buf;
+	uint32_t size = sizeof(e100_tx_buf_t) + FRAME_DAT_LEN + FRAME_HEAD_LEN;
+	uint8_t tx_buf[size];
 	_kmemclr((byte_t *) &tx_buf, sizeof(tx_buf));
 	eth0.tx_buf_base = &tx_buf;
 
-	__outl(eth0.CSR_BAR + E_CSR_SCB_GEN_PTR, (uint32_t) eth0.tx_buf_base);
+	__outl(eth0.CSR_BAR + E_CSR_SCB_GEN_PTR, (uint32_t) eth0.rx_buf_base);
 	__outb(eth0.CSR_BAR + E_CSR_SCB_COM_WORD, SCB_RCMD_RU_START);
 	nic_wait();
 }
@@ -170,6 +171,30 @@ void _net_init_rx_frame_area(void)
 	eth0.rx_buf_end = last_buffer;
 }
 
+void _net_init_rxb(e100_rx_buf_t *rx_buffer)
+{
+	rx_buffer->header.cmd = 0x0;
+	rx_buffer->size = FRAME_DAT_LEN;
+	rx_buffer->header.stat = 0x0;
+	rx_buffer->header.cmd = ACT_CMD_EL | ACT_CMD_S;
+}
+
+void e100_tx (uint8_t *tx_data, uint16_t data_size)
+{
+	uint8_t *data = (uint8_t *)&(eth0.tx_buf_base[1]);
+
+	_kmemcpy((byte_t *)tx_data, (byte_t *)data, data_size);
+
+	_kmemclr((byte_t *) eth0.tx_buf_base, sizeof(e100_tx_buf_t));
+	eth0.tx_buf_base->tbda_addr = 0;
+	eth0.tx_buf_base->header.cmd = ACT_CMD_EL | ACT_CMD_I | ACT_CMD_S | ACT_CMD_TRANS;
+	eth0.tx_buf_base->tx_cb_byte_count = data_size;
+
+	__outl(eth0.CSR_BAR + E_CSR_SCB_GEN_PTR, (uint32_t) eth0.tx_buf_base);
+	__outb(eth0.CSR_BAR + E_CSR_SCB_COM_WORD, SCB_CCMD_CU_START);
+
+
+}
 void nic_wait( void )
 {
 	while (__inb(eth0.CSR_BAR + E_CSR_SCB_COM_WORD))
@@ -246,4 +271,32 @@ void net_CSR_dump( void )
 	c_puts("---MORE---");
 	c_getchar();
 	c_putchar('\n');
+}
+
+uint32_t htonl(uint32_t hlong)
+{
+	uint16_t temp = ((uint16_t*)&hlong)[1];
+	hlong = hlong<<sizeof(uint16_t) | temp;
+	return hlong;
+}
+
+uint16_t htons(uint16_t hshort)
+{
+	uint8_t temp = ((uint8_t*)&hshort)[1];
+	hshort = hshort<<sizeof(uint8_t) | temp;
+	return hshort;
+}
+
+uint32_t ntohl(uint32_t nlong)
+{
+	uint16_t temp = ((uint16_t*)&nlong)[1];
+	nlong = nlong<<sizeof(uint16_t) | temp;
+	return nlong;
+}
+
+uint16_t ntohs(uint16_t nshort)
+{
+	uint8_t temp = ((uint8_t*)&nshort)[1];
+	nshort = nshort<<sizeof(uint8_t) | temp;
+	return nshort;
 }

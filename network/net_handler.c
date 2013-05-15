@@ -72,14 +72,30 @@ void _net_handler(int vector, int code)
 			{
 				break;
 			}
-
 			eth0.rx_count++;
-		}
+			ether_frame_t *frame = (ether_frame_t *) &rx_buffer->frame[0];
+			if (frame->eth_head.protocol == htons(0xFA57))
+			{
+				c_printf("GOT A MESSAGE! \n\n%s\n\n", frame->data);
+			}
 
+			if ((rx_buffer->header.cmd & ACT_CMD_EL) != 0)
+			{
+				_net_init_rxb(rx_buffer);
+				rx_buffer = (e100_rx_buf_t *) rx_buffer->header.link_offset;
+				break;
+			}
+
+			_net_init_rxb(rx_buffer);
+			rx_buffer = (e100_rx_buf_t *) rx_buffer->header.link_offset;
+		}
+		
+		eth0.rx_buf_ptr = rx_buffer;
 		__outb(eth0.CSR_BAR + E_CSR_SCB_STAT_ACK, SCB_STAT_FR);
 	}
 	if ((SCB_STAT_ACK_Byte & SCB_STAT_CNA) != 0)
 	{
+		eth0.CU_finished = 1;
 		__outb(eth0.CSR_BAR + E_CSR_SCB_STAT_ACK, SCB_STAT_CNA);
 	}
 	if ((SCB_STAT_ACK_Byte & SCB_STAT_RNR) != 0)
@@ -110,5 +126,4 @@ void _net_handler(int vector, int code)
 	{
 		__outb( PIC_SLAVE_CMD_PORT, PIC_EOI );
 	}
-
 }
