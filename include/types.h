@@ -49,6 +49,8 @@ typedef long		int32_t;
 typedef unsigned long	uint32_t;
 typedef uint32_t	ulong_t;
 
+typedef long long	uint64_t;
+
 #ifndef MIXED_INCLUDES
 typedef uint16_t	size_t;
 #endif

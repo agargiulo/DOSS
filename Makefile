@@ -10,13 +10,13 @@
 U_C_SRC = clock.c klibc.c process.c queue.c scheduler.c sio.c \
 	stack.c syscall.c system.c ulibc.c user.c string.c shell/shell.c \
 	shell/ps.c shell/clear.c shell/help.c shell/reboot.c shell/echo.c \
-	shell/halt.c shell/lspci.c pci/pci.c shell/test.c disk.c \
+	shell/halt.c shell/lspci.c pci/pci.c shell/test.c disk/disk.c ofs.c \
 	video/video.c video.vga.c
 
 U_C_OBJ = clock.o klibc.o process.o queue.o scheduler.o sio.o \
 	stack.o syscall.o system.o ulibc.o user.o string.o shell/shell.o\
 	shell/ps.o shell/clear.o shell/help.o shell/reboot.o shell/echo.o\
-	shell/halt.o shell/lspci.o shell/test.o pci/pci.o disk.o \
+	shell/halt.o shell/lspci.o shell/test.o pci/pci.o disk/disk.o ofs.o \
 	video/video.o video/vga.o
 
 U_S_SRC = klibs.S ulibs.S video/video_s.s
@@ -24,14 +24,7 @@ U_S_OBJ = klibs.o ulibs.o video_s.o
 
 U_LIBS	=
 
-VPATH = . shell pci video
-
-U_H_SRC = include/clock.h include/common.h include/defs.h include/klib.h \
-	  include/process.h include/queue.h include/scheduler.h include/sio.h \
-	  include/stack.h include/syscall.h include/system.h include/types.h \
-	  include/ulib.h include/user.h include/pci.h include/video_s.h \
-	  include/video.h include/vga.h
-
+VPATH = . shell pci video disk
 #
 # User compilation/assembly definable options
 #
@@ -227,8 +220,9 @@ syscall.o: ./include/startup.h ./include/x86arch.h
 system.o: ./include/common.h ./include/system.h ./include/process.h
 system.o: ./include/clock.h ./include/stack.h ./include/bootstrap.h
 system.o: ./include/syscall.h ./include/sio.h ./include/queue.h
-system.o: ./include/scheduler.h ./include/pci.h ./include/startup.h
-system.o: ./include/x86arch.h ./include/user.h ./include/ulib.h
+system.o: ./include/scheduler.h ./include/pci.h ./include/disk.h
+system.o: ./include/types.h ./include/startup.h ./include/x86arch.h
+system.o: ./include/user.h ./include/ulib.h
 ulibc.o: ./include/common.h
 user.o: ./include/common.h ./include/user.h ./include/c_io.h
 user.o: ./include/shell.h
@@ -239,10 +233,16 @@ shell/clear.o: ./include/common.h
 shell/help.o: ./include/common.h
 shell/reboot.o: ./include/common.h ./include/string.h ./include/shell.h
 shell/echo.o: ./include/common.h
+shell/halt.o: ./include/common.h ./include/string.h ./include/shell.h
 shell/lspci.o: ./include/common.h ./include/string.h ./include/pci.h
 pci/pci.o: ./include/common.h ./include/pci.h ./include/startup.h
-shell/test.o: ./include/disk.h ./include/common.h
-disk.o: ./include/common.h ./include/disk.h ./include/pci.h
+shell/test.o: ./include/disk.h ./include/common.h ./include/types.h
+shell/test.o: ./include/c_io.h ./include/string.h
+disk/disk.o: ./include/common.h ./include/disk.h ./include/types.h
+disk/disk.o: ./include/pci.h ./include/startup.h ./include/support.h
+disk/disk.o: ./include/ulib.h ./include/process.h ./include/clock.h
+disk/disk.o: ./include/stack.h ./include/x86arch.h
+ofs.o: ./include/common.h ./include/string.h ./include/disk.h
+ofs.o: ./include/types.h ./include/ofs.h
 video/video.o: ./include/common.h ./include/video_s.h ./include/video.h
 video/video.o: ./include/vga.h ./include/startup.h
-video/vga.o: ./include/common.h ./include/vga.h ./include/startup.h
