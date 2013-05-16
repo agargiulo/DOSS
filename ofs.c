@@ -1,13 +1,12 @@
 /*
-** SCCS ID:	%W%	%G%
 **
-** File:	?
+** File:	ofs.c
 **
 ** Author:	4003-506 class of 20123
 **
-** Contributor:
+** Contributor: Owen Royall-Kahin
 **
-** Description:	?
+** Description:	Implementation for Owen's Filesystem. 
 */
 
 #define	__SP2_KERNEL__
@@ -105,10 +104,15 @@ void clear_buffer( void ) {
 	memset( cluster_buffer, 0x00, CLUSTER_SIZE );
 }
 
-// Quick function for rewriting the FAT to disk. Clears the global buffer.
+/**
+ * Quick function for rewriting the FAT to disk. Clears the global buffer.
+ */
 status_t update_fat( void ) {
 	// Copy fat to our buffer
 	memcpy( cluster_buffer, fat, CLUSTER_COUNT );
+	
+	// need to fill the rest with zeroes
+	//memset( cluster_buffer+sizeof(fat), 0x00, CLUSTER_SIZE-CLUSTER_COUNT );
 	
 	// write it
 	status = write_cluster( current_fat );
@@ -117,13 +121,15 @@ status_t update_fat( void ) {
 		return status;
 	}
 		
-	clear_buffer();
+// 	clear_buffer();
 	
 	
 	return status;
 }
 
-// Reload the fat from disk
+/**
+ * Reload the fat from disk
+ */
 status_t load_fat( void ) {
 	status = read_cluster( current_fat );
 	if (status) {
@@ -134,7 +140,9 @@ status_t load_fat( void ) {
 	return status;
 }
 
-// Function for rewriting the Directory Table to disk. Clears the global buffer.
+/**
+ * Function for rewriting the Directory Table to disk. Clears the global buffer.
+ */
 status_t update_dt( void ) {
 	// Copy dt to our buffer
 	memcpy( cluster_buffer, dir_table, CLUSTER_SIZE );
@@ -146,11 +154,13 @@ status_t update_dt( void ) {
 		return status;
 	}
 	
-	clear_buffer();
+// 	clear_buffer();
 	return status;
 }
 
-// Reload the directory table from the disk
+/**
+ * Reload the directory table from the disk
+ */
 status_t load_dt( void ) {
 	status = read_cluster( current_dt );
 	if (status) {
@@ -161,6 +171,9 @@ status_t load_dt( void ) {
 	return status;
 }
 
+/**
+ * Retrieve a free file descriptor index
+ */
 int get_free_fd( void ) {
 	int i;
 	for ( i = 0; i < MAXFILES; ++i ) {
@@ -172,6 +185,10 @@ int get_free_fd( void ) {
 	return -1;
 }
 
+/**
+ * Retrieve the directory table index used by file with given filename.
+ * Returning -1 means the file does not exist.
+ */
 int find_in_dt( char * filename ) {
 	int i;
 	
@@ -179,10 +196,13 @@ int find_in_dt( char * filename ) {
 		if ( strcmp( dir_table[i].name, filename ) == 0 )
 			return i;
 	}
-// 	c_printf("File not found: %s\n");
+	
 	return -1;
 }
 
+/**
+ * Retrieve a free directory table index
+ */
 int get_free_dti( void ) {
 	int i;
 	
@@ -197,6 +217,9 @@ int get_free_dti( void ) {
 	return -1;
 }
 
+/**
+ * Retrieve a free fat index
+ */
 int get_free_fat( void ) {
 	int i;
 	
@@ -210,58 +233,64 @@ int get_free_fat( void ) {
 	return -1;
 }
 
+/**
+ * Clear a fat chain, and erase data at the corresponding clusters.
+ */
 void clear_fat_chain( uint32_t index ) {
-	clear_buffer();
 	
 	uint32_t current = index;
 	uint32_t next = fat[current];
 	
-	while( next != 0xFFFFFFFF ) {	
-		
-		write_cluster( current );
+	while( next != 0xFFFFFFFF ) {
 		fat[current] = 0;
 		current = next;
 		next = fat[current];
 	}
 	
-	write_cluster( current );
 	fat[current] = 0;
 }
 
-int read_data( uint32_t cluster_index, uint8_t** buffer, size_t size ) {
-    int dsize = CLUSTER_SIZE;
-    uint8_t *data = qalloc(dsize);
-    uint8_t *currentPos = data;
-    int i = 0;
-    
-    while (cluster_index != 0xFFFFFFFF) {
-    
-        if ( i > 0 ) {
-            int newsize = CLUSTER_SIZE*(i+1);
-            uint8_t *temp = qalloc( newsize );
-            memcpy( temp, data, dsize );
-            
-            //qfree( data, dsize );
-            dsize = newsize;
-            data = temp;
-        }
-        ++i;
-        
-        read_cluster( cluster_index );
-	memcpy( currentPos, cluster_buffer, CLUSTER_SIZE );
-	currentPos += CLUSTER_SIZE;
-	
-        cluster_index = fat[cluster_index];
-    }
-    
-    memcpy(*buffer, data, size);
-    
-    //qfree(data, dsize);
-    
-    return CLUSTER_SIZE*i;
+/**
+ * Reads data into a buffer for specified amount, or until end of file
+ * is reached.
+ */
+int read_data( uint16_t cluster_index, uint8_t** buffer, size_t size ) {
+	int dsize = CLUSTER_SIZE;
+	uint8_t *data = qalloc(dsize);
+	uint8_t *currentPos = data;
+	int i = 0;
+
+	while (cluster_index != 0xFFFFFFFF) {
+
+		if ( i > 0 ) {
+			int newsize = CLUSTER_SIZE*(i+1);
+			uint8_t *temp = qalloc( newsize );
+			    memcpy( temp, data, dsize );
+
+			//qfree( data, dsize );
+			dsize = newsize;
+			data = temp;
+		}
+		++i;
+
+		read_cluster( cluster_index );
+		memcpy( currentPos, cluster_buffer, CLUSTER_SIZE );
+		currentPos += CLUSTER_SIZE;
+
+		cluster_index = fat[cluster_index];
+	}
+	memcpy(*buffer, data, size);
+
+	//qfree(data, dsize);
+
+	return CLUSTER_SIZE*i;
 }
 
-void write_data( uint32_t first_cluster, uint8_t *data, size_t size ) {
+/**
+ * Writes data to a cluster, and expands to multiple clusters if necessary.
+ */
+ 
+void write_data( uint16_t first_cluster, uint8_t *data, size_t size ) {
 	uint8_t *currentPos = data;
 	size_t writeSize = size;
 	size_t leftToWrite = size;
@@ -269,16 +298,13 @@ void write_data( uint32_t first_cluster, uint8_t *data, size_t size ) {
 	if (CLUSTER_SIZE < size) {
 		writeSize = CLUSTER_SIZE;
 	}
-// 	c_printf("writing %d\n", writeSize);
+	
 	memcpy( cluster_buffer, currentPos, writeSize );
 	if ( writeSize < CLUSTER_SIZE ) {
 		memset( cluster_buffer + writeSize, 0x00, CLUSTER_SIZE-writeSize );
 	}
 	write_cluster( first_cluster );
-// 	c_printf("buffer contents before write: %x%x%x%x%x\n", 
-// 		 data[0], data[1], data[2],
-// 		 data[3], data[4]
-// 		);
+	
 	leftToWrite -= writeSize;
 	
 	int thisCluster = first_cluster;
@@ -319,7 +345,10 @@ void write_data( uint32_t first_cluster, uint8_t *data, size_t size ) {
 /*
 ** PUBLIC FUNCTIONS
 */
-
+/**
+ * Initialize the filesystem. Should probably done at startup,
+ * currently done using "mount" command. Can only be done once per boot.
+ */
 void _fs_init( void ) {
 	
 	if ( fs_initialized == 0 ) {
@@ -415,6 +444,7 @@ void _fs_init( void ) {
 			
 			c_printf("ofs successfully created\n");
 			
+			
 		}
 		
 		for ( i = 0; i < MAXFILES; ++i ) {
@@ -445,7 +475,7 @@ file_t * fcreat( char * name ) {
 				
 				update_dt();
 				update_fat();
-				
+
 				return fopen( name );
 			}
 		}
@@ -460,10 +490,9 @@ file_t * fopen( char * name ) {
 		int dti = find_in_dt( name );
 		if ( dti != -1 ) {
 			file_t *result = &fd[newfd];
-			strncpy( result->name, dir_table[dti].name, 112 );
+			strcpy( result->name, name );
 			result->cluster = dir_table[dti].index;
 			result->id = newfd;
-			result->size = dir_table[dti].size;
 			return result;
 		}
 	}
@@ -474,20 +503,11 @@ file_t * fopen( char * name ) {
 int fclose( file_t * file ) {
 	
 	if ( file != 0 ) {
-	
-		// Update DT info for this file 
-		int dti = find_in_dt( file->name );
-		dir_table[dti].size = file->size;
-		dir_table[dti].time = _system_time;
-		
-		// Clear file struct data
 		file->name[0] = 0x00;
 		file->cluster = 0;
 		file->size = 0;
-		file = 0;
 		
-		update_dt();
-		update_fat();
+		file = 0;
 	}
 	
 	return 0;
@@ -499,23 +519,21 @@ size_t fread( void * buffer, size_t size, size_t count, file_t * file ) {
 		read_data( file->cluster, (uint8_t**)&buffer, size*count );
 	}
 	
-	return (size*count);
+	return 0;
 }
 
 size_t fwrite( const void * buffer, size_t size, size_t count, file_t * file ) {
 	
 	if ( file != 0 ) {
 		write_data( file->cluster, (uint8_t*)buffer, size*count );
-		file->size = (size*count);
 	}
 	
-	return (size*count);
+	return 0;
 }
 
-// Print n fat and n dt listings for testing purposes, won't be available
 void print_fat( int n ) {
 	int i;
-	n = CLUSTER_COUNT < n ? CLUSTER_COUNT : n;
+	n = CLUSTER_COUNT > n ? CLUSTER_COUNT : n;
 	
 	c_printf("File allocation table:\n");
 	for (i = 0; i < n; ++i) {
@@ -525,7 +543,7 @@ void print_fat( int n ) {
 
 void print_dt( int n ) {
 	int i;
-	n = DIR_TABLE_SIZE < n ? DIR_TABLE_SIZE : n;
+	n = DIR_TABLE_SIZE > n ? DIR_TABLE_SIZE : n;
 	
 	c_printf("Directory Table:\n");
 	for (i = 0; i < n; ++i) {
@@ -557,9 +575,9 @@ void df( void ) {
 	
 	c_printf("Used Clusters: %d\n", used_clusters);
 	c_printf("Available Clusters: %d\n", CLUSTER_COUNT-used_clusters);
-	float percent = ((float)CLUSTER_COUNT-(float)used_clusters)
-		*((float)100/(float)CLUSTER_COUNT);
-	c_printf("Percentage Free: %f\n", percent);
+//	float percent = ((float)CLUSTER_COUNT-(float)used_clusters)
+//		*((float)100/(float)CLUSTER_COUNT);
+//	c_printf("Percentage Free: %f\n", percent);
 
 }
 

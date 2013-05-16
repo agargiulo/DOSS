@@ -7,9 +7,6 @@
 **
 ** Description:	Handle the IDE device initialization, provide system accessible 
 ** functions for writing to the disk.
-** 
-** Heavily aided by osdev wiki code. Especially _disk_init and the register
-** write functions.
 */
 
 #define	__SP2_KERNEL__
@@ -221,12 +218,12 @@ uint8_t ide_buffer[2048];
 */
 
 void ide_isr( int vec, int code ) {
-	//TODO
+    //TODO
 	__outb( PIC_MASTER_CMD_PORT, PIC_EOI );
 	__outb( PIC_SLAVE_CMD_PORT, PIC_EOI );
 }
 
-// From OSDev wiki
+// IDE register writing, from OSDev wiki
 void ide_write( uint8_t channel, uint8_t reg, const uint8_t data ) {
 	
 	if (reg > 0x07 && reg < 0x0C)
@@ -243,7 +240,7 @@ void ide_write( uint8_t channel, uint8_t reg, const uint8_t data ) {
 		ide_write(channel, ATA_REG_CONTROL, 2);
 }
 
-// From OSDev wiki
+// IDE register reading, from OSDev wiki
 uint8_t ide_read( uint8_t channel, uint8_t reg ) {
 	uint8_t result;
 	
@@ -304,7 +301,7 @@ uint8_t ide_polling(uint8_t channel, uint32_t advanced_check) {
 void pio_lba28_write( struct ide_device *device, uint32_t sector, const uint8_t *buffer, size_t nbytes ) {
 	uint8_t status;
 	int i;
-// 	c_printf("write called\n");
+    
 	// turn off interrupts
 	ide_write( device->channel, ATA_REG_CONTROL, 2 );
 	
@@ -333,7 +330,6 @@ void pio_lba28_write( struct ide_device *device, uint32_t sector, const uint8_t 
 	// send command
 	ide_write( device->channel, ATA_REG_COMMAND, CMD_WRITE_SECTORS_EXT );
 	
-// 	c_printf("writing at %d\n", sector);
 	
 	uint16_t *buf = (uint16_t*)buffer;
 	
@@ -355,15 +351,12 @@ void pio_lba28_write( struct ide_device *device, uint32_t sector, const uint8_t 
 		c_printf("device busy, write failed\n");
 	}
 	
-	//c_printf("write complete\n");
 }
 
 void pio_lba28_read( struct ide_device *device, uint32_t sector, uint8_t *buffer, size_t nbytes ) {
 	uint8_t status;
 	int i;
 	
-	
-	//c_printf("read called\n");
 	// turn off interrupts
 	ide_write( device->channel, ATA_REG_CONTROL, 0x02 );
 	
@@ -391,8 +384,7 @@ void pio_lba28_read( struct ide_device *device, uint32_t sector, uint8_t *buffer
 	
 	// send command
 	ide_write( device->channel, ATA_REG_COMMAND, CMD_READ_SECTORS_EXT );
-	
-// 	c_printf("reading at %d\n", sector);
+    
 	
 	status = ide_polling( device->channel, 1 );
 	while ( !(ide_read( device->channel, ATA_REG_STATUS) & 0x08) );
@@ -415,7 +407,6 @@ void pio_lba28_read( struct ide_device *device, uint32_t sector, uint8_t *buffer
 		c_printf("device busy, read failed");
 	}
 	
-	//c_printf("read complete\n");
 }
 
 
@@ -455,7 +446,12 @@ void ide_read_buffer32( uint8_t channel, uint8_t reg, uint32_t *buffer, size_t n
 */
 
 
-// Heavily influenced by OSDev
+/**
+ * Disk initialization, borrowed heavily from OSdev wiki, as are the device storage
+ * structures. This is already run at system startup.
+ * Note: Will not be able to detect SATA devices properly. If there is no PATA
+ * device, it will choose the wrong device configuration and OFS will fail.
+ */
 void _disk_init( void ) {
 	int i, j, k, m;
 	
@@ -467,12 +463,11 @@ void _disk_init( void ) {
 	// Look for IDE controllers in device tab
 	for ( i = 0; i < device_count; ++i ) {
 		device_t *dev = &device_tab[i];
-		// If it's an storage controller ( and PATA controller )
-		c_printf("device: %x %x %x %x\n", dev->bus, dev->slot, dev->func, dev->subclass);
-		if ( dev->class == MASS_STORAGE && dev->func == 2 ) {
+		// If it's an storage controller
+		if ( dev->class == MASS_STORAGE ) {
 			
 			// Set base io, control, and bm registers
-			// Should be dynamically calculated, these are hard coded for PATA devices
+			// Should be dynamically calculated
 			channels[ATA_PRIMARY].base = 0x1F0; //f0e0 //(dev->bar0 & 0xFFFFFFFC) + 0x1F0 * (!(dev->bar0));
 			channels[ATA_PRIMARY].ctrl = 0x3F4; //f0d0 //(dev->bar1 & 0xFFFFFFFC) + 0x3F4 * (!(dev->bar1));
 			channels[ATA_SECONDARY].base = 0x170; //f0c0 //(dev->bar2 & 0xFFFFFFFC) + 0x170 * (!(dev->bar2));
@@ -480,7 +475,7 @@ void _disk_init( void ) {
 			channels[ATA_PRIMARY].bmide = 0xf0f0; // //(dev->bar4 & 0xFFFFFFFC) + 0; // Bus Master IDE
 			channels[ATA_SECONDARY].bmide = 0xf0f8; //(dev->bar4 & 0xFFFFFFFC) + 8; // Bus Master IDE
 			
-			// Turn off interrupts
+			
 			ide_write(ATA_PRIMARY, ATA_REG_CONTROL, 2);
 			ide_write(ATA_SECONDARY, ATA_REG_CONTROL, 2);
 			
@@ -525,7 +520,7 @@ void _disk_init( void ) {
 				
 				// If there is an error, it means the device is not ATA
 				if ( error != 0 ) {
-					continue;
+					
 					uint8_t low = ide_read(j, ATA_REG_LBA1);
 					uint8_t high = ide_read(j, ATA_REG_LBA2);
 					
@@ -582,7 +577,7 @@ void _disk_init( void ) {
 	
 }
 
-void print_devices() {
+void print_devices( void ) {
 	int i;
 	
 	for (i = 0; i < 4; i++) {
@@ -598,6 +593,10 @@ void print_devices() {
 	}
 }
 
+/**
+ * Note that these implementations of read and write will always return 0 (good).
+ * The lba28 read/write functions are void, which should be changed, since they can fail.
+ */
 status_t disk_read( uint32_t sector, uint8_t *buffer, size_t n ) {
 	pio_lba28_read( &ide_devices[0], sector, buffer, n );
 	return 0;
