@@ -64,7 +64,7 @@ void * memset ( void * ptr, int value, size_t num ) {
 	int i;
 	
 	for ( i = 0; i != num; ++i ) {
-		((int*)ptr)[i] = value;
+		((uint8_t*)ptr)[i] = value;
 	}
 	
 	return ptr;
