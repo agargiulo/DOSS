@@ -36,9 +36,9 @@ void _pci_init( void )
 					d->bus = bus;
 					d->slot = slot;
 					d->vendor = vendor;
+					d->func = func;
+					
 					d->device = pci_read(bus, slot, func, REG_DEVICE);
-					
-					
 					
 					d->command = pci_read(bus, slot, func, REG_COMMAND);
 					d->status = pci_read(bus, slot, func, REG_STATUS);

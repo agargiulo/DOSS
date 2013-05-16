@@ -11,6 +11,7 @@
 
 #include <common.h>
 #include <ofs.h>
+#include <qalloc.h>
 
 /*
 ** PRIVATE DEFINITIONS
@@ -37,5 +38,13 @@
 */
 
 void run_cat(int argc, char **argv) {
-	c_printf("cat run\n");
+	if ( argc > 1 ) {
+		file_t * file = fopen( argv[1] );
+		if ( file != 0 ) {
+			char *buffer = qalloc( file->size );
+			fread( buffer, 1, file->size, file );
+			fclose( file );
+			c_printf("%s\n", buffer);
+		}
+	}
 }

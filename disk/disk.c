@@ -7,6 +7,9 @@
 **
 ** Description:	Handle the IDE device initialization, provide system accessible 
 ** functions for writing to the disk.
+** 
+** Heavily aided by osdev wiki code. Especially _disk_init and the register
+** write functions.
 */
 
 #define	__SP2_KERNEL__
@@ -218,10 +221,12 @@ uint8_t ide_buffer[2048];
 */
 
 void ide_isr( int vec, int code ) {
+	//TODO
 	__outb( PIC_MASTER_CMD_PORT, PIC_EOI );
 	__outb( PIC_SLAVE_CMD_PORT, PIC_EOI );
 }
 
+// From OSDev wiki
 void ide_write( uint8_t channel, uint8_t reg, const uint8_t data ) {
 	
 	if (reg > 0x07 && reg < 0x0C)
@@ -238,6 +243,7 @@ void ide_write( uint8_t channel, uint8_t reg, const uint8_t data ) {
 		ide_write(channel, ATA_REG_CONTROL, 2);
 }
 
+// From OSDev wiki
 uint8_t ide_read( uint8_t channel, uint8_t reg ) {
 	uint8_t result;
 	
@@ -449,7 +455,7 @@ void ide_read_buffer32( uint8_t channel, uint8_t reg, uint32_t *buffer, size_t n
 */
 
 
-
+// Heavily influenced by OSDev
 void _disk_init( void ) {
 	int i, j, k, m;
 	
@@ -461,11 +467,12 @@ void _disk_init( void ) {
 	// Look for IDE controllers in device tab
 	for ( i = 0; i < device_count; ++i ) {
 		device_t *dev = &device_tab[i];
-		// If it's an storage controller
-		if ( dev->class == MASS_STORAGE ) {
+		// If it's an storage controller ( and PATA controller )
+		c_printf("device: %x %x %x %x\n", dev->bus, dev->slot, dev->func, dev->subclass);
+		if ( dev->class == MASS_STORAGE && dev->func == 2 ) {
 			
 			// Set base io, control, and bm registers
-			// Should be dynamically calculated
+			// Should be dynamically calculated, these are hard coded for PATA devices
 			channels[ATA_PRIMARY].base = 0x1F0; //f0e0 //(dev->bar0 & 0xFFFFFFFC) + 0x1F0 * (!(dev->bar0));
 			channels[ATA_PRIMARY].ctrl = 0x3F4; //f0d0 //(dev->bar1 & 0xFFFFFFFC) + 0x3F4 * (!(dev->bar1));
 			channels[ATA_SECONDARY].base = 0x170; //f0c0 //(dev->bar2 & 0xFFFFFFFC) + 0x170 * (!(dev->bar2));
@@ -473,7 +480,7 @@ void _disk_init( void ) {
 			channels[ATA_PRIMARY].bmide = 0xf0f0; // //(dev->bar4 & 0xFFFFFFFC) + 0; // Bus Master IDE
 			channels[ATA_SECONDARY].bmide = 0xf0f8; //(dev->bar4 & 0xFFFFFFFC) + 8; // Bus Master IDE
 			
-			
+			// Turn off interrupts
 			ide_write(ATA_PRIMARY, ATA_REG_CONTROL, 2);
 			ide_write(ATA_SECONDARY, ATA_REG_CONTROL, 2);
 			

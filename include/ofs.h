@@ -18,7 +18,7 @@
 */
 
 typedef struct file {
-	char		*name;
+	char		name[112];
 	uint32_t	size;
 	uint32_t	cluster;
 	uint8_t		id;
@@ -66,12 +66,17 @@ size_t fread( void * buffer, size_t size, size_t count, file_t * file );
  */ 
 size_t fwrite( const void * buffer, size_t size, size_t count, file_t * file );
 
-// Other FS functions
+// Testing methods, will go unused
 void print_fat( int n );
 void print_dt( int n );
+
+// Other FS functions, to be called by their appropriate shell functions.
+// This was done to obscure DT/FAT stuff from shell processes. May not have 
+// been a great idea.
 void df( void );
 void stat( char * filename );
 void ls( void );
+void cat( char * filename );
 
 
 #endif

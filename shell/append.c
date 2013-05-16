@@ -37,5 +37,23 @@
 */
 
 void run_append(int argc, char **argv) {
-	c_printf("append run\n");
+	if ( argc > 2 ) {
+		file_t * file = fopen( argv[1] );
+		if ( file != 0 ) {
+			if ( file->size == 0 ) {
+				fwrite( argv[2], sizeof(char), strlen(argv[2]), file );
+				file->size = strlen(argv[2]);
+				
+			} else {
+				uint32_t newsize = (file->size) + strlen(argv[2]);
+				char *buffer = qalloc( newsize );
+				fread( buffer, sizeof(char), file->size, file );
+				memcpy( buffer + (file->size), argv[2], strlen(argv[2]) );
+				fwrite( buffer, sizeof(char), newsize, file );
+				file->size = newsize;
+			}
+			fclose( file );
+		}
+		
+	}
 }
