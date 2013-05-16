@@ -38,6 +38,7 @@ void print_devices( void );
  * @param n		Number of bytes to read
  */
 status_t disk_read( uint32_t sector, uint8_t *buffer, size_t nbytes );
+// disk_read for 512 nbytes. Should really be a macro
 status_t read_sector( uint32_t sector, uint8_t *buffer );
 
 /**
@@ -47,6 +48,7 @@ status_t read_sector( uint32_t sector, uint8_t *buffer );
  * @param n		Number of bytes to write
  */
 status_t disk_write( uint32_t sector, const uint8_t *buffer, size_t nbytes );
+// disk_write for 512 nbytes. Should really be a macro
 status_t write_sector( uint32_t sector, const uint8_t *buffer );
 
 
