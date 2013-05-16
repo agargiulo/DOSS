@@ -148,7 +148,7 @@ void _net_init_rx_frame_area(void)
 
 	for (int i = 0; i < E100_NUM_RX_BUFS; i++)
 	{
-		static e100_rx_buf_t rx_buffer;
+		e100_rx_buf_t rx_buffer;
 		_kmemclr((byte_t *) &rx_buffer, sizeof(e100_rx_buf_t));
 		rx_buffer.size = FRAME_DAT_LEN;
 

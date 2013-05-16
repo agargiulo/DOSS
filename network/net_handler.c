@@ -70,14 +70,16 @@ void _net_handler(int vector, int code)
 		{
 			if (rx_buffer->header.link_offset == (uint32_t) eth0.rx_buf_ptr)
 			{
-				break;
+				//break;
 			}
 			eth0.rx_count++;
 			ether_frame_t *frame = (ether_frame_t *) &rx_buffer->frame[0];
+			/*
 			if (frame->eth_head.protocol == htons(0xFA57))
 			{
-				c_printf("GOT A MESSAGE! \n\n%s\n\n", frame->data);
 			}
+			*/
+			c_printf("GOT A MESSAGE! \n\n%s\n\n", frame->data);
 
 			if ((rx_buffer->header.cmd & ACT_CMD_EL) != 0)
 			{

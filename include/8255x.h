@@ -51,6 +51,8 @@
 /*
  * Control / Status Register Offsets
  */
+// Can either read 1 byte or two. If you read one, you also
+// will want to read the next byte separately
 #define E_CSR_SCB_STAT_WORD     0x00    /* 2 Bytes */
 // STAT_ACK is the upper byte of the STAT_WORD
 #define E_CSR_SCB_STAT_ACK      0x01    /* 1 Byte  */
@@ -101,13 +103,20 @@
 /*
  * STAT/ACK Defines
  */
+/* Command completed */
 #define SCB_STAT_CX             0x80
+/* Frame received */
 #define SCB_STAT_FR             0x40
+/* CU went from active to idle */
 #define SCB_STAT_CNA            0x20
+/* RU went from active to idle or suspended */
 #define SCB_STAT_RNR            0x10
+/* MDI read or write cycle completed */
 #define SCB_STAT_MDI            0x08
+/* Software interrupt */
 #define SCB_STAT_SWI            0x04
 // 0x02 is reserved
+/* Flow control paused */
 #define SCB_STAT_FCP            0x01
 /*
  * CUS/RUS Values
@@ -125,8 +134,11 @@
 /*
  * Action Command defines
  */
+/* Last block in the CBL or RFA */
 #define ACT_CMD_EL              0x8000
+/* Suspend the CU/RU after cmd or frame */
 #define ACT_CMD_S               0x4000
+/* Generate an interrupt on completion */
 #define ACT_CMD_I               0x2000
 #define ACT_CMD_NOP             0x0000
 // IA = Individual Address
@@ -152,35 +164,42 @@
 /*
  * Types
  */
-#define MAC_ADDR_LEN            6       /* 6 bytes in a MAC Address */
-#define FRAME_DAT_LEN           1496    /* Max bytes in an ethernet frame data area*/
-#define FRAME_HEAD_LEN          14      /* Bytes in an ethernet header */
-#define E100_NUM_RX_BUFS        5       /* because I had to pick something */
+/* 6 bytes in a MAC Address */
+#define MAC_ADDR_LEN            6
+/* Max bytes in an ethernet frame data area*/
+#define FRAME_DAT_LEN           1496
+/* Bytes in an ethernet header */
+#define FRAME_HEAD_LEN          14
+/* because I had to pick something */
+#define E100_NUM_RX_BUFS        5
 
 /*
  * A MAC address
+ * Composed of 6 bytes
  */
 typedef uint8_t mac_addr_t[MAC_ADDR_LEN];
 
 /*
  * Ethernet frames and all that jazz
+ * These are packed to ensure correct spacing of the data
  */
 typedef struct ether_header
 {
-	mac_addr_t dest;
-	mac_addr_t src;
-	uint16_t protocol;
+	mac_addr_t dest; // Where is this packet headed?
+	mac_addr_t src; // Where did this packet come from?
+	uint16_t protocol; // How should we interpret the info?
 } __attribute__((__packed__)) ether_header_t;
 
 typedef struct ether_frame
 {
-	ether_header_t eth_head;
-	uint8_t data[FRAME_DAT_LEN];
+	ether_header_t eth_head; // See above
+	uint8_t data[FRAME_DAT_LEN]; // Yum data =]
 } __attribute__((__packed__)) ether_frame_t;
 
 
 /*
  * The default structure that the card will use for commands sent to it
+ * or for frames received by it
  */
 typedef struct e100_cmd_header
 {
@@ -200,24 +219,30 @@ typedef struct e100_cmd_dump
 	uint8_t buffer[596];
 } __attribute__((__packed__)) e100_cmd_dump_t;
 
+/*
+ * stores information about data received
+ */
 typedef struct e100_rx_buf
 {
-	e100_cmd_header_t header;
+	e100_cmd_header_t header; // See above
 
 	uint32_t reserved;
-	uint16_t true_count;
-	uint16_t size;
-	uint8_t frame[FRAME_DAT_LEN + FRAME_HEAD_LEN];
+	uint16_t true_count; // bytes actually written to the data buffer
+	uint16_t size; // size of data buffer
+	uint8_t frame[FRAME_DAT_LEN + FRAME_HEAD_LEN]; // data buffer
 } __attribute__((__packed__)) e100_rx_buf_t;
 
+/*
+ * stores data to be sent out
+ */
 typedef struct e100_tx_buf
 {
-	e100_cmd_header_t header;
+	e100_cmd_header_t header; // see above
 
-	uint32_t tbda_addr;
-	uint16_t tx_cb_byte_count;
-	uint8_t tx_thresh;
-	uint8_t tbs_number;
+	uint32_t tbda_addr; // addr of the transmit buffer descripter (TBD) array
+	uint16_t tx_cb_byte_count; // how many bytes will be tx'd from the tx command block
+	uint8_t tx_thresh; // how many bytes are present before tx happens
+	uint8_t tbd_number; // num of tx buffers in the TBD
 } __attribute__((__packed__)) e100_tx_buf_t;
 
 /*
@@ -226,17 +251,25 @@ typedef struct e100_tx_buf
  */
 typedef struct e100_device
 {
-	device_t *pci;
-	uint32_t CSR_BAR;
-	mac_addr_t hw_addr;
+	device_t *pci; // Basic PCI information. More can be set that I actually use
+	uint32_t CSR_BAR; // Control/Status Register IO Mapped BAR
+	mac_addr_t hw_addr; // Local MAC address
 
+	/*
+	 * For the Receive Frame Area
+	 */
 	e100_rx_buf_t *rx_buf_base;
 	e100_rx_buf_t *rx_buf_ptr;
 	e100_rx_buf_t *rx_buf_end;
 
+	// Transmit things
 	e100_tx_buf_t *tx_buf_base;
 
+	// Did our command finish yet?
+	// Check this and find out
 	uint8_t CU_finished;
+
+	// How many frames have we received so far?
 	uint32_t rx_count;
 
 } e100_device_t;
@@ -244,6 +277,7 @@ typedef struct e100_device
 /*
  * Globals
  */
+// The actual network device is controlled using info found in this struct
 extern e100_device_t eth0;
 
 /*
@@ -261,8 +295,19 @@ void _net_init(void);
  */
 void _net_complete_init(void);
 
+/*
+ * set of the RX Frame Area (RFA) for the RU
+ */
 void _net_init_rx_frame_area(void);
+
+/*
+ * Initialize a rx buffer
+ */
 void _net_init_rxb(e100_rx_buf_t *rx_buffer);
+
+/*
+ * use this to send a frame
+ */
 void e100_tx (uint8_t *tx_data, uint16_t data_size);
 
 /*
@@ -286,6 +331,11 @@ uint16_t eth_pci_read (uint8_t reg);
 uint32_t eth_pci_readl (uint8_t reg);
 
 
+/*
+ * Take host integers and convert them to network bit order
+ * and vice versa
+ * Little Endianness <-> Big Enidanness
+ */
 uint32_t htonl(uint32_t hlong);
 uint16_t htons(uint16_t hshort);
 uint32_t ntohl(uint32_t nlong);
