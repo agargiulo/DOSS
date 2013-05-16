@@ -62,6 +62,9 @@
 void write_registers(unsigned char *regs);
 void write_font( unsigned char *buf );
 
+void set_plane(unsigned p);
+static unsigned get_fb_seg( void );
+
 void _video_setmode_13( void );
 void _video_setmode_text( void );
 
