@@ -460,5 +460,5 @@ void _video_setmode_13( void )
 void _video_setmode_text( void )
 {
 	write_registers(mode_80_25_text);
-	write_registers(font_8_16);
+	write_font(font_8_16);
 }
